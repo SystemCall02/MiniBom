@@ -35,6 +35,11 @@ public class LoginController {
         return userDelegator.find(queryRequestVo, new RDMPageVO(1, 10));
     }
 
+    /**
+     * 登录接口
+     * @param loginDTO
+     * @return
+     */
     @ApiOperation("用户登录")
     @PostMapping("/login")
     public UserViewDTO login(@RequestBody LoginDTO loginDTO){
