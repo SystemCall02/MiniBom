@@ -7,11 +7,11 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
 @EnableWebMvc
-@ComponentScan(basePackages = {"com.huawei.innovation","com.idme.minibom"})
+@ComponentScan(basePackages = {"com.huawei.innovation", "com.idme.minibom"})
 public class MiniBomApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MiniBomApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MiniBomApplication.class, args);
+    }
 
 }

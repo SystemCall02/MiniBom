@@ -1,4 +1,5 @@
 package com.idme.minibom.Controller;
+
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
@@ -31,26 +32,27 @@ public class LoginController {
     @PostMapping("/find")
     public List<UserViewDTO> find(String name) {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
-        queryRequestVo.addCondition("name", ConditionType.EQUAL,name);
+        queryRequestVo.addCondition("name", ConditionType.EQUAL, name);
         return userDelegator.find(queryRequestVo, new RDMPageVO(1, 10));
     }
 
     /**
      * 登录接口
+     *
      * @param loginDTO
      * @return
      */
     @ApiOperation("用户登录")
     @PostMapping("/login")
-    public UserViewDTO login(@RequestBody LoginDTO loginDTO){
+    public UserViewDTO login(@RequestBody LoginDTO loginDTO) {
         List<UserViewDTO> userViewDTOS = find(loginDTO.getName());
         UserViewDTO responseResult = new UserViewDTO();
-        if(userViewDTOS.isEmpty()){
+        if (userViewDTOS.isEmpty()) {
             //Exception
         }
         UserViewDTO queryResult = userViewDTOS.get(0);
         //password加密 DigestUtils.md5DigestAsHex()
-        if(loginDTO.getPassword().equals(queryResult.getPassword())){
+        if (loginDTO.getPassword().equals(queryResult.getPassword())) {
             //Exception
         }
 
