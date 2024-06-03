@@ -96,5 +96,6 @@ public class PartController {
         partBranchCreateDTO.setCreateTime(partDTO.getCreate_time());
         partBranchCreateDTO.setRdmExtensionType(partDTO.getRdm_ext_type());
         partBranchCreateDTO.setTenant(tenant);
+        return partBranchCreateDTO;
     }
 }

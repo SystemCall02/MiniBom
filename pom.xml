@@ -15,7 +15,8 @@
 	<description>MiniBom</description>
 	<properties>
 		<java.version>17</java.version>
-		<idme.jar.path>/home/jomo/project/Java/MiniBomJar/san2-1.0.0-optimization-SNAPSHOT-user</idme.jar.path>
+<!--		定义为自己的jar包路径-->
+		<idme.jar.path>E:/minibom1/jar</idme.jar.path>
 		<idme.app.name>san2</idme.app.name>
 	</properties>
 	<dependencies>
