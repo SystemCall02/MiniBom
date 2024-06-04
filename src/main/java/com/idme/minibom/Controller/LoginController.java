@@ -7,6 +7,7 @@ import com.huawei.innovation.rdm.san2.dto.entity.*;
 
 import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.DTO.LoginDTO;
+import com.idme.minibom.utils.AESUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class LoginController {
      */
     @ApiOperation("用户登录")
     @PostMapping("/login")
-    public Result login(@RequestBody LoginDTO loginDTO){
+    public Result login(@RequestBody LoginDTO loginDTO) throws Exception {
         List<UserViewDTO> userViewDTOS = find(loginDTO.getName());
         UserViewDTO responseResult = new UserViewDTO();
         if(userViewDTOS==null||userViewDTOS.isEmpty()){
@@ -53,6 +54,7 @@ public class LoginController {
         }
         UserViewDTO queryResult = userViewDTOS.get(0);
         //password加密 DigestUtils.md5DigestAsHex()
+        loginDTO.setPassword(AESUtil.decrypt(loginDTO.getPassword()));
         if(!loginDTO.getPassword().equals(queryResult.getPassword())){
             //Exception
             return Result.error(400,"用户账号或密码错误");
