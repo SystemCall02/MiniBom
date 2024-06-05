@@ -87,12 +87,12 @@ public class AttributeController {
         //Constraint文本类型至少需要指定的信息：
         // "{\"length\":100,\"notnull\":false,\"variable\":true,\"stockInDB\":true,\"secretLevel\":\"internal\",\"caseMode\":\"DEFAULT\",\"multiValue\":false}"
         //其他类型可先通过IDME人工创建，利用Postman Query查看形式，再编码调用
-        //TODO 是否允许用户指定约束信息看时间进度
+        //约束信息是否用户自定义根据时间进度
         String dataType = attrCreateDTO.getType();
         if(dataType.equals("STRING")){
             createDTO.setConstraint("{\"length\":200,\"notnull\":false,\"variable\":true,\"stockInDB\":true,\"secretLevel\":\"internal\",\"caseMode\":\"DEFAULT\",\"multiValue\":false}");
         }else if(dataType.equals("DECIMAL")){
-            //待定
+            createDTO.setConstraint("{\"precision\":2,\"notnull\":false,\"variable\":true,\"stockInDB\":true,\"secretLevel\":\"internal\",\"caseMode\":\"DEFAULT\",\"multiValue\":false}");
         }
 
         exaDefinitionDelegator.create(createDTO);
