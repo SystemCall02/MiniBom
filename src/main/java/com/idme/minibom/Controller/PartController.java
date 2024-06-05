@@ -1,15 +1,12 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.MasterIdModifierDTO;
-import com.huawei.innovation.rdm.coresdk.basic.dto.ObjectReferenceParamDTO;
-import com.huawei.innovation.rdm.san2.bean.enumerate.AssemblyMode;
-import com.huawei.innovation.rdm.san2.bean.enumerate.PartSource;
+import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdDecryptDTO;
 import com.huawei.innovation.rdm.san2.delegator.PartDelegator;
-import com.huawei.innovation.rdm.san2.dto.entity.PartBranchCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.entity.PartCreateDTO;
-import com.huawei.innovation.rdm.san2.dto.entity.PartMasterCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.entity.PartViewDTO;
-import com.idme.minibom.pojo.DTO.PartDeleteDto;
+import com.idme.minibom.pojo.DTO.PartDeleteDTO;
+import com.idme.minibom.pojo.DTO.PartGetDTO;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,10 +27,18 @@ public class PartController {
     }
 
     @PostMapping("/deletePart")
-    public int delete(@RequestBody PartDeleteDto partDeleteDto) {
+    public int delete(@RequestBody PartDeleteDTO partDeleteDto) {
         MasterIdModifierDTO dto = new MasterIdModifierDTO();
         dto.setModifier(partDeleteDto.modifier);
         dto.setMasterId(partDeleteDto.masterId);
         return partDelegator.delete(dto);
+    }
+
+    @PostMapping("/getPart")
+    public PartViewDTO get(@RequestBody PartGetDTO partGetDTO) {
+        PersistObjectIdDecryptDTO dto = new PersistObjectIdDecryptDTO();
+        dto.setId(partGetDTO.id);
+        dto.setDecrypt(partGetDTO.decrypt);
+        return partDelegator.get(dto);
     }
 }
