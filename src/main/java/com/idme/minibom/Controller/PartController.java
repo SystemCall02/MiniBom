@@ -1,15 +1,10 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.MasterIdModifierDTO;
-import com.huawei.innovation.rdm.coresdk.basic.dto.ObjectReferenceParamDTO;
-import com.huawei.innovation.rdm.san2.bean.enumerate.AssemblyMode;
-import com.huawei.innovation.rdm.san2.bean.enumerate.PartSource;
 import com.huawei.innovation.rdm.san2.delegator.PartDelegator;
-import com.huawei.innovation.rdm.san2.dto.entity.PartBranchCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.entity.PartCreateDTO;
-import com.huawei.innovation.rdm.san2.dto.entity.PartMasterCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.entity.PartViewDTO;
-import com.idme.minibom.pojo.DTO.PartDeleteDto;
+import com.idme.minibom.pojo.DTO.PartDeleteDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +38,7 @@ public class PartController {
      */
     @PostMapping("/deletePart")
     @ApiOperation("删除part")
-    public int delete(@RequestBody PartDeleteDto partDeleteDto) {
+    public int delete(@RequestBody PartDeleteDTO partDeleteDto) {
         MasterIdModifierDTO dto = new MasterIdModifierDTO();
         dto.setModifier(partDeleteDto.modifier);
         dto.setMasterId(partDeleteDto.masterId);
