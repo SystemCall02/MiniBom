@@ -137,14 +137,13 @@ public class ClassificationController {
      * @return
      */
     private ClassificationTreeVO castToClassificationTreeVO(ClassificationNodeViewDTO classificationNodeViewDTO){
-        ClassificationTreeVO classificationTreeVO = new ClassificationTreeVO();
-        classificationTreeVO.setId(classificationNodeViewDTO.getId());
-        classificationTreeVO.setName(classificationNodeViewDTO.getName());
-        classificationTreeVO.setNameEn(classificationNodeViewDTO.getNameEn());
-        classificationTreeVO.setBusinessCode(classificationNodeViewDTO.getBusinessCode());
-        classificationTreeVO.setEnableFlag(!classificationNodeViewDTO.getDisableFlag());
-
-        return classificationTreeVO;
+        return ClassificationTreeVO.builder()
+                .id(classificationNodeViewDTO.getId())
+                .businessCode(classificationNodeViewDTO.getBusinessCode())
+                .enableFlag(!classificationNodeViewDTO.getDisableFlag())
+                .name(classificationNodeViewDTO.getName())
+                .nameEn(classificationNodeViewDTO.getNameEn())
+                .build();
     }
 
 }
