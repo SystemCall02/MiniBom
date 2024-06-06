@@ -11,6 +11,7 @@ import com.huawei.innovation.rdm.san2.dto.entity.*;
 import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.DTO.PartModifyDTO;
 import com.idme.minibom.pojo.DTO.PartQueryDTO;
+import com.idme.minibom.pojo.VO.PartQueryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +69,17 @@ public class PartController {
 
     @PostMapping("/query")
     @ApiOperation("请求part")
-    public List<PartQueryViewDTO> query(@RequestBody PartQueryDTO dto) {
+    public Result query(@RequestBody PartQueryDTO dto) {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
-        queryRequestVo.addCondition("id", ConditionType.EQUAL, String.valueOf(dto.id));
-        return partDelegator.query(queryRequestVo, new RDMPageVO(dto.curPage, dto.pageSize));
+        if (dto.id == null) {
+            queryRequestVo.setIsNeedTotal(true);
+        } else {
+            queryRequestVo.addCondition("id", ConditionType.EQUAL, dto.id);
+        }
+        List<PartQueryViewDTO> resList = partDelegator.query(queryRequestVo, new RDMPageVO(dto.curPage, dto.pageSize));
+        PartQueryVO res = new PartQueryVO();
+        res.setResList(resList);
+        res.setSize(partDelegator.count(queryRequestVo));
+        return Result.success(res);
     }
 }
