@@ -1,5 +1,7 @@
 package com.idme.minibom.pojo.DTO;
 
 public class PartQueryDTO {
-    public long id;
+    public Long id;
+    public Integer curPage;
+    public Integer pageSize;
 }
