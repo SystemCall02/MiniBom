@@ -1,17 +1,21 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
+import com.huawei.innovation.rdm.coresdk.basic.enums.JoinerType;
+import com.huawei.innovation.rdm.coresdk.basic.vo.QueryCondition;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.xdm.delegator.EXADefinitionDelegator;
 import com.huawei.innovation.rdm.xdm.dto.entity.EXADefinitionCreateDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.EXADefinitionQueryViewDTO;
+import com.huawei.innovation.rdm.xdm.dto.entity.EXADefinitionViewDTO;
 import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.DTO.AttrCreateDTO;
 import com.idme.minibom.pojo.DTO.AttributeQueryDTO;
 import com.idme.minibom.pojo.VO.AttributeQueryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.hibernate.mapping.Join;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,8 +42,8 @@ public class AttributeController {
     public Result pageQueryAttribute(@RequestBody AttributeQueryDTO attributeQueryDTO){
         QueryRequestVo queryRequestVo = QueryVO(attributeQueryDTO);
         AttributeQueryVO attributeQueryVO = new AttributeQueryVO();
-        List<EXADefinitionQueryViewDTO> queryResult = exaDefinitionDelegator
-                .query(queryRequestVo, new RDMPageVO(attributeQueryDTO.getCurPage(), attributeQueryDTO.getPageSize()));
+        List<EXADefinitionViewDTO> queryResult = exaDefinitionDelegator
+                .find(queryRequestVo, new RDMPageVO(attributeQueryDTO.getCurPage(), attributeQueryDTO.getPageSize()));
         long total = exaDefinitionDelegator.count(queryRequestVo);
 
         attributeQueryVO.setResultList(queryResult);
@@ -55,18 +59,15 @@ public class AttributeController {
      */
     private QueryRequestVo QueryVO(AttributeQueryDTO attributeQueryDTO){
         QueryRequestVo queryRequestVo = new QueryRequestVo();
-        if(attributeQueryDTO.getName() == null || attributeQueryDTO.getName().isEmpty()){
+        if (attributeQueryDTO.getName() == null || attributeQueryDTO.getName().isEmpty()) {
             queryRequestVo.setIsNeedTotal(true);
-        }else{
-            char condition = attributeQueryDTO.getName().charAt(0);
-            if(condition>65 && condition<90 || condition>97 && condition<122){
-                queryRequestVo.addCondition("nameEn", ConditionType.LIKE, attributeQueryDTO.getName());
-            }else{
-                queryRequestVo.addCondition("name",ConditionType.LIKE, attributeQueryDTO.getName());
-            }
+        } else {
+            QueryCondition queryCondition = new QueryCondition();
+            queryCondition.setJoiner(JoinerType.OR.getJoiner());
+            queryCondition.addCondition("nameEn", ConditionType.LIKE, attributeQueryDTO.getName());
+            queryCondition.addCondition("name", ConditionType.LIKE, attributeQueryDTO.getName());
+            queryRequestVo.setFilter(queryCondition);
         }
-
-
         return queryRequestVo;
     }
 

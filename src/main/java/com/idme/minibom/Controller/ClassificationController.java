@@ -3,6 +3,8 @@ package com.idme.minibom.Controller;
 import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdDecryptDTO;
 import com.huawei.innovation.rdm.coresdk.basic.dto.QueryChildListDTO;
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
+import com.huawei.innovation.rdm.coresdk.basic.enums.JoinerType;
+import com.huawei.innovation.rdm.coresdk.basic.vo.QueryCondition;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeDelegator;
@@ -56,18 +58,15 @@ public class ClassificationController {
      */
     private QueryRequestVo QueryVO(ClassificationQueryDTO classificationQueryDTO){
         QueryRequestVo queryRequestVo = new QueryRequestVo();
-        if(classificationQueryDTO.getName() == null || classificationQueryDTO.getName().isEmpty()){
+        if (classificationQueryDTO.getName() == null || classificationQueryDTO.getName().isEmpty()) {
             queryRequestVo.setIsNeedTotal(true);
-        }else{
-            char condition = classificationQueryDTO.getName().charAt(0);
-            if(condition>65 && condition<90 || condition>97 && condition<122 || Character.isDigit(condition)){
-                queryRequestVo.addCondition("businessCode", ConditionType.EQUAL, classificationQueryDTO.getName());
-            }else{
-                queryRequestVo.addCondition("name",ConditionType.LIKE, classificationQueryDTO.getName());
-            }
+        } else {
+            QueryCondition queryCondition = new QueryCondition();
+            queryCondition.setJoiner(JoinerType.OR.getJoiner());
+            queryCondition.addCondition("businessCode", ConditionType.LIKE, classificationQueryDTO.getName());
+            queryCondition.addCondition("name", ConditionType.LIKE, classificationQueryDTO.getName());
+            queryRequestVo.setFilter(queryCondition);
         }
-
-
         return queryRequestVo;
     }
 
