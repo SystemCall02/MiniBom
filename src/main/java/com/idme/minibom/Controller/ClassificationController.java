@@ -9,6 +9,7 @@ import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeDelegator;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeGroupDelegator;
+import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeCreateDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeQueryViewDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeViewDTO;
 import com.idme.minibom.Result.Result;
@@ -143,6 +144,19 @@ public class ClassificationController {
                 .name(classificationNodeViewDTO.getName())
                 .nameEn(classificationNodeViewDTO.getNameEn())
                 .build();
+    }
+
+    /**
+     * 创建分类
+     */
+    @PostMapping("/create")
+    @ApiOperation("创建分类")
+    public Result createClassification(@RequestBody ClassificationNodeCreateDTO createDTO){
+        //TODO 暂时不清楚如何为分类指定属性
+        //TODO 暂时有父节点ID为空的错误出现，等重构IDME中的分类树状结构即可在前端必须指定值防止为空
+        classificationNodeDelegator.create(createDTO);
+
+        return Result.success();
     }
 
 }
