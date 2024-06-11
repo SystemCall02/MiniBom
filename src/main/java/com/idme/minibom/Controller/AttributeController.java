@@ -39,6 +39,7 @@ import java.util.List;
 @RestController
 @Api(tags = "属性相关接口")
 @RequestMapping("/idme/attribute")
+@CrossOrigin
 public class AttributeController {
 
     @Autowired

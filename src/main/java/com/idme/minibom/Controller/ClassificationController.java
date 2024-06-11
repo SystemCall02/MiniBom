@@ -1,19 +1,17 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdDecryptDTO;
-import com.huawei.innovation.rdm.coresdk.basic.dto.QueryChildListDTO;
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
 import com.huawei.innovation.rdm.coresdk.basic.enums.JoinerType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryCondition;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeDelegator;
-import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeGroupDelegator;
+import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeRelatedByTypeDefinitionDelegator;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeCreateDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeQueryViewDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeViewDTO;
 import com.idme.minibom.Result.Result;
-import com.idme.minibom.pojo.DTO.AttributeQueryDTO;
 import com.idme.minibom.pojo.DTO.ClassificationQueryDTO;
 import com.idme.minibom.pojo.VO.ClassificationQueryVO;
 import com.idme.minibom.pojo.VO.ClassificationTreeVO;
@@ -22,17 +20,24 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.Query;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @Api(tags = "分类管理接口")
 @RequestMapping("/idme/classification")
+@CrossOrigin
 public class ClassificationController {
 
     @Autowired
     private ClassificationNodeDelegator classificationNodeDelegator;
+
+
+
+
+
+    @Autowired
+    private  ClassificationNodeRelatedByTypeDefinitionDelegator classificationNodeRelatedByTypeDefinitionDelegator;
 
     /**
      * 分页查询分类
@@ -155,8 +160,10 @@ public class ClassificationController {
         //TODO 暂时不清楚如何为分类指定属性
         //TODO 暂时有父节点ID为空的错误出现，等重构IDME中的分类树状结构即可在前端必须指定值防止为空
         classificationNodeDelegator.create(createDTO);
-
         return Result.success();
     }
+
+
+
 
 }
