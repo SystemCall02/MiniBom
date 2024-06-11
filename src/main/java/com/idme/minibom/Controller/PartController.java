@@ -46,6 +46,12 @@ public class PartController {
         return Result.success(partDelegator.checkout(dto));
     }
 
+    @PostMapping("checkin")
+    @ApiOperation("检入Part")
+    public Result checkin(@RequestBody VersionCheckInDTO dto) {
+        return Result.success(partDelegator.checkin(dto));
+    }
+
     @PostMapping("/update")
     @ApiOperation("更新part")
     public Result update(@RequestBody PartModifyDTO dto) {
