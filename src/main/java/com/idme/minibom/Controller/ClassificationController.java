@@ -1,18 +1,14 @@
 package com.idme.minibom.Controller;
 
-import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdDecryptDTO;
-import com.huawei.innovation.rdm.coresdk.basic.dto.QueryChildListDTO;
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
 import com.huawei.innovation.rdm.coresdk.basic.enums.JoinerType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryCondition;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeDelegator;
-import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeGroupDelegator;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeQueryViewDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeViewDTO;
 import com.idme.minibom.Result.Result;
-import com.idme.minibom.pojo.DTO.AttributeQueryDTO;
 import com.idme.minibom.pojo.DTO.ClassificationQueryDTO;
 import com.idme.minibom.pojo.VO.ClassificationQueryVO;
 import com.idme.minibom.pojo.VO.ClassificationTreeVO;
@@ -21,13 +17,13 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.Query;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @Api(tags = "分类管理接口")
 @RequestMapping("/idme/classification")
+@CrossOrigin
 public class ClassificationController {
 
     @Autowired
@@ -35,15 +31,16 @@ public class ClassificationController {
 
     /**
      * 分页查询分类
+     *
      * @return
      */
     @PostMapping("/page")
     @ApiOperation("分页查询分类节点")
-    public Result pageQueryClass(@RequestBody ClassificationQueryDTO classificationQueryDTO){
+    public Result pageQueryClass(@RequestBody ClassificationQueryDTO classificationQueryDTO) {
         QueryRequestVo queryRequestVo = QueryVO(classificationQueryDTO);
         List<ClassificationNodeQueryViewDTO> queryResult =
                 classificationNodeDelegator.query(queryRequestVo, new RDMPageVO(classificationQueryDTO.getCurPage()
-                , classificationQueryDTO.getPageSize()));
+                        , classificationQueryDTO.getPageSize()));
         ClassificationQueryVO classificationQueryVO = new ClassificationQueryVO();
         classificationQueryVO.setResultList(queryResult);
         classificationQueryVO.setTotal(classificationNodeDelegator.count(queryRequestVo));
@@ -53,10 +50,11 @@ public class ClassificationController {
 
     /**
      * 统一封装查询VO
+     *
      * @param classificationQueryDTO
      * @return
      */
-    private QueryRequestVo QueryVO(ClassificationQueryDTO classificationQueryDTO){
+    private QueryRequestVo QueryVO(ClassificationQueryDTO classificationQueryDTO) {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
         if (classificationQueryDTO.getName() == null || classificationQueryDTO.getName().isEmpty()) {
             queryRequestVo.setIsNeedTotal(true);
@@ -72,11 +70,12 @@ public class ClassificationController {
 
     /**
      * 分类树状结构
+     *
      * @return
      */
     @GetMapping("/tree")
     @ApiOperation("返回分类树状结构")
-    public Result ClassificationTree(){
+    public Result ClassificationTree() {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
         Long count = classificationNodeDelegator.count(queryRequestVo);
         List<ClassificationNodeViewDTO> fingAllList =
@@ -89,27 +88,29 @@ public class ClassificationController {
 
     /**
      * 构建分类树
+     *
      * @param findAllList
      * @return
      */
-    private List<ClassificationTreeVO> buildTree(List<ClassificationNodeViewDTO> findAllList){
+    private List<ClassificationTreeVO> buildTree(List<ClassificationNodeViewDTO> findAllList) {
         List<ClassificationTreeVO> resultList = new ArrayList<>();
-        for(ClassificationNodeViewDTO classificationNodeViewDTO: findAllList){
+        for (ClassificationNodeViewDTO classificationNodeViewDTO : findAllList) {
             //将父节点为空的节点（根节点）加入到结果集中
-            if(classificationNodeViewDTO.getParentNode() == null){
+            if (classificationNodeViewDTO.getParentNode() == null) {
                 ClassificationTreeVO classificationTreeVO = castToClassificationTreeVO(classificationNodeViewDTO);
                 resultList.add(classificationTreeVO);
             }
         }
 
         for (ClassificationTreeVO parent : resultList) {
-            recursionFindChildren(parent,findAllList);
+            recursionFindChildren(parent, findAllList);
         }
         return resultList;
     }
 
     /**
      * 递归寻找子节点
+     *
      * @param parent
      * @param findAllList
      */
@@ -117,12 +118,12 @@ public class ClassificationController {
         List<ClassificationTreeVO> children = new ArrayList<>();
 
         for (ClassificationNodeViewDTO classificationNodeViewDTO : findAllList) {
-            if(classificationNodeViewDTO.getParentNode() == null)
+            if (classificationNodeViewDTO.getParentNode() == null)
                 continue;
 
-            if(classificationNodeViewDTO.getParentNode().getId().equals(parent.getId())){
+            if (classificationNodeViewDTO.getParentNode().getId().equals(parent.getId())) {
                 ClassificationTreeVO child = castToClassificationTreeVO(classificationNodeViewDTO);
-                recursionFindChildren(child,findAllList);
+                recursionFindChildren(child, findAllList);
                 children.add(child);
             }
         }
@@ -132,10 +133,11 @@ public class ClassificationController {
 
     /**
      * 将ClassificationNodeViewDTO转成TreeVO对象
+     *
      * @param classificationNodeViewDTO
      * @return
      */
-    private ClassificationTreeVO castToClassificationTreeVO(ClassificationNodeViewDTO classificationNodeViewDTO){
+    private ClassificationTreeVO castToClassificationTreeVO(ClassificationNodeViewDTO classificationNodeViewDTO) {
         return ClassificationTreeVO.builder()
                 .id(classificationNodeViewDTO.getId())
                 .businessCode(classificationNodeViewDTO.getBusinessCode())
