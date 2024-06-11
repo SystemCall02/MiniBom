@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "BOMLink管理相关接口")
 @RequestMapping("/api/BOMLink")
 @RestController
+@CrossOrigin
 public class BOMLinkController {
     @Autowired
     private BOMLinkDelegator bomLinkDelegator;
