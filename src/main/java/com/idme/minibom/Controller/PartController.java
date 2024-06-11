@@ -40,6 +40,12 @@ public class PartController {
         return Result.success(partDelegator.delete(dto));
     }
 
+    @PostMapping("/checkout")
+    @ApiOperation("检出part")
+    public Result checkout(@RequestBody VersionCheckOutDTO dto) {
+        return Result.success(partDelegator.checkout(dto));
+    }
+
     @PostMapping("/update")
     @ApiOperation("更新part")
     public Result update(@RequestBody PartModifyDTO dto) {
