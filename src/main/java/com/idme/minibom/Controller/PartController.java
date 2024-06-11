@@ -2,6 +2,7 @@ package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.MasterIdModifierDTO;
 import com.huawei.innovation.rdm.coresdk.basic.dto.VersionMasterDTO;
+import com.huawei.innovation.rdm.coresdk.basic.dto.VersionMasterQueryDTO;
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
@@ -87,12 +88,22 @@ public class PartController {
         return Result.success(res);
     }
 
-    @PostMapping("/versions")
+    @PostMapping("/allversions")
     @ApiOperation("获取Part所有版本")
-    public Result allVersion(@RequestBody PartVersionQueryDTO dto) {
+    public Result allVersions(@RequestBody PartVersionQueryDTO dto) {
         VersionMasterDTO versionMasterDTO = new VersionMasterDTO();
         versionMasterDTO.setMasterId(dto.getMasterId());
-        versionMasterDTO.setVersion(dto.getVersion());
         return Result.success(partDelegator.getAllVersions(versionMasterDTO, new RDMPageVO(dto.getCurPage(), dto.getPageSize())));
     }
+
+    @PostMapping("/version")
+    @ApiOperation("获取Part对应版本信息")
+    public Result version(@RequestBody PartVersionQueryDTO dto) {
+        VersionMasterQueryDTO versionMasterQueryDTO = new VersionMasterQueryDTO();
+        versionMasterQueryDTO.setMasterId(dto.getMasterId());
+        versionMasterQueryDTO.setVersion(dto.getVersion());
+        return Result.success(partDelegator.getVersionByMaster(versionMasterQueryDTO));
+    }
+
+
 }
