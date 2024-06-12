@@ -7,16 +7,17 @@ import com.huawei.innovation.rdm.coresdk.basic.enums.JoinerType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryCondition;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
-import com.huawei.innovation.rdm.coresdk.basic.vo.RDMResultVO;
 import com.huawei.innovation.rdm.delegate.common.XdmDelegateConsts;
 import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeDelegator;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeRelatedByTypeDefinitionDelegator;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeCreateDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeQueryViewDTO;
+import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeUpdateDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeViewDTO;
 import com.idme.minibom.Constant.APIConstant;
 import com.idme.minibom.Result.Result;
+import com.idme.minibom.pojo.DTO.AddClassificationNodeAttrDTO;
 import com.idme.minibom.pojo.DTO.ClassificationQueryDTO;
 import com.idme.minibom.pojo.VO.ClassificationQueryVO;
 import com.idme.minibom.pojo.VO.ClassificationTreeVO;
@@ -28,9 +29,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @Api(tags = "分类管理接口")
@@ -172,8 +171,8 @@ public class ClassificationController {
     @ApiOperation("创建分类")
     public Result createClassification(@RequestBody ClassificationNodeCreateDTO createDTO){
         //TODO 暂时有父节点ID为空的错误出现，等重构IDME中的分类树状结构即可在前端必须指定值防止为空
-        classificationNodeDelegator.create(createDTO);
-        return Result.success();
+        ClassificationNodeViewDTO classificationNodeViewDTO = classificationNodeDelegator.create(createDTO);
+        return Result.success(classificationNodeViewDTO.getId());
     }
 
 
@@ -199,6 +198,37 @@ public class ClassificationController {
 
         return Result.success(result);
     }
+
+    @PostMapping("/update")
+    @ApiOperation("更新分类信息")
+    public Result updateClassification(@RequestBody ClassificationNodeUpdateDTO classificationNodeUpdateDTO){
+        classificationNodeDelegator.update(classificationNodeUpdateDTO);
+        return Result.success();
+    }
+
+
+
+    @PostMapping("/addAttr")
+    @ApiOperation("增加分类关联属性")
+    public Result addClassificationNodeAttr(@RequestBody AddClassificationNodeAttrDTO addClassificationNodeAttrDTO){
+        String url = APIConstant.ENDPOINT+"/ClassificationNode/attribute/add";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(XdmDelegateConsts.X_AUTH_TOKEN,tokenService.getToken());
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("attrIds",addClassificationNodeAttrDTO.getAttrIds());
+        jsonObject.put("holderId",addClassificationNodeAttrDTO.getHolderId());
+        JSONObject params = new JSONObject();
+        params.put("params",jsonObject);
+        HttpEntity<JSONObject> request = new HttpEntity<>(params,headers);
+        restTemplate.postForEntity(url,request, JSONObject.class);
+
+        return Result.success();
+
+    }
+
+
+
 
 
 
