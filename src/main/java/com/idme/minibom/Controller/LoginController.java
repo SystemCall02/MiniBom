@@ -64,7 +64,5 @@ public class LoginController {
         responseResult.setId(queryResult.getId());
 
         return Result.success("登录成功",responseResult);
-
     }
-
 }
