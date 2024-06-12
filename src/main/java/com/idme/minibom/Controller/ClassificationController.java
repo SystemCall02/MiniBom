@@ -1,26 +1,35 @@
 package com.idme.minibom.Controller;
 
-import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdDecryptDTO;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
 import com.huawei.innovation.rdm.coresdk.basic.enums.JoinerType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryCondition;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
+import com.huawei.innovation.rdm.coresdk.basic.vo.RDMResultVO;
+import com.huawei.innovation.rdm.delegate.common.XdmDelegateConsts;
+import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeDelegator;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeRelatedByTypeDefinitionDelegator;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeCreateDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeQueryViewDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeViewDTO;
+import com.idme.minibom.Constant.APIConstant;
 import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.DTO.ClassificationQueryDTO;
 import com.idme.minibom.pojo.VO.ClassificationQueryVO;
 import com.idme.minibom.pojo.VO.ClassificationTreeVO;
+import com.idme.minibom.pojo.VO.QueryClassificationNodeAttrVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -32,6 +41,11 @@ public class ClassificationController {
     @Autowired
     private ClassificationNodeDelegator classificationNodeDelegator;
 
+    @Autowired
+    private XdmTokenService tokenService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
 
 
@@ -157,10 +171,33 @@ public class ClassificationController {
     @PostMapping("/create")
     @ApiOperation("创建分类")
     public Result createClassification(@RequestBody ClassificationNodeCreateDTO createDTO){
-        //TODO 暂时不清楚如何为分类指定属性
         //TODO 暂时有父节点ID为空的错误出现，等重构IDME中的分类树状结构即可在前端必须指定值防止为空
         classificationNodeDelegator.create(createDTO);
         return Result.success();
+    }
+
+
+    @GetMapping("/getAttr/{linkId}")
+    @ApiOperation("查询分类的属性")
+    public Result getNodeAttr(@PathVariable Long linkId){
+        String url = APIConstant.ENDPOINT+"/ClassificationNode/getCategoryNodeInfo?linkId={linkId}";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(XdmDelegateConsts.X_AUTH_TOKEN,tokenService.getToken());
+        HashMap<String,Long> params = new HashMap<>();
+        params.put("linkId",linkId);
+        HttpEntity<String> request = new HttpEntity<>(null,headers);
+        JSONObject body = restTemplate.exchange(url, HttpMethod.GET, request, JSONObject.class, params).getBody();
+        List<QueryClassificationNodeAttrVO> result = new ArrayList<>();
+        JSONArray attrs = body.getJSONArray("data").getJSONObject(0).getJSONArray("attrs");
+        for (int i=0;i<attrs.size();i++){
+            QueryClassificationNodeAttrVO queryClassificationNodeAttrVO = new QueryClassificationNodeAttrVO();
+            queryClassificationNodeAttrVO.setName(attrs.getJSONObject(i).getString("name"));
+            queryClassificationNodeAttrVO.setNameEn(attrs.getJSONObject(i).getString("nameEn"));
+            result.add(queryClassificationNodeAttrVO);
+        }
+
+        return Result.success(result);
     }
 
 
