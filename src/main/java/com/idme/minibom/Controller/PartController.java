@@ -29,21 +29,27 @@ public class PartController {
     private PartDelegator partDelegator;
 
     @PostMapping("/create")
-    @ApiOperation("创建part")
+    @ApiOperation("创建Part")
     public Result create(@RequestBody PartCreateDTO dto) {
         return Result.success(partDelegator.create(dto));
     }
 
     @PostMapping("/delete")
-    @ApiOperation("删除part")
+    @ApiOperation("删除Part")
     public Result delete(@RequestBody MasterIdModifierDTO dto) {
         return Result.success(partDelegator.delete(dto));
     }
 
     @PostMapping("/checkout")
-    @ApiOperation("检出part")
+    @ApiOperation("检出Part")
     public Result checkout(@RequestBody VersionCheckOutDTO dto) {
         return Result.success(partDelegator.checkout(dto));
+    }
+
+    @PostMapping("/undocheckout")
+    @ApiOperation(("撤销检出Part"))
+    public Result undocheckout(@RequestBody VersionUndoCheckOutDTO dto) {
+        return Result.success(partDelegator.undoCheckout(dto));
     }
 
     @PostMapping("checkin")
@@ -53,7 +59,7 @@ public class PartController {
     }
 
     @PostMapping("/update")
-    @ApiOperation("更新part")
+    @ApiOperation("更新Part")
     public Result update(@RequestBody PartModifyDTO dto) {
         PartUpdateDTO partUpdateDTO = new PartUpdateDTO();
         partUpdateDTO.setId(dto.getId());
@@ -79,7 +85,7 @@ public class PartController {
     }
 
     @PostMapping("/query")
-    @ApiOperation("请求part")
+    @ApiOperation("请求Part")
     public Result query(@RequestBody PartQueryDTO dto) {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
         if (dto.id == null && dto.name == null) {
