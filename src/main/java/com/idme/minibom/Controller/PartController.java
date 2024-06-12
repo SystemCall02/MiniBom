@@ -29,21 +29,27 @@ public class PartController {
     private PartDelegator partDelegator;
 
     @PostMapping("/create")
-    @ApiOperation("创建part")
+    @ApiOperation("创建Part")
     public Result create(@RequestBody PartCreateDTO dto) {
         return Result.success(partDelegator.create(dto));
     }
 
     @PostMapping("/delete")
-    @ApiOperation("删除part")
+    @ApiOperation("删除Part")
     public Result delete(@RequestBody MasterIdModifierDTO dto) {
         return Result.success(partDelegator.delete(dto));
     }
 
     @PostMapping("/checkout")
-    @ApiOperation("检出part")
+    @ApiOperation("检出Part")
     public Result checkout(@RequestBody VersionCheckOutDTO dto) {
         return Result.success(partDelegator.checkout(dto));
+    }
+
+    @PostMapping("/undocheckout")
+    @ApiOperation(("撤销检出Part"))
+    public Result undocheckout(@RequestBody VersionUndoCheckOutDTO dto) {
+        return Result.success(partDelegator.undoCheckout(dto));
     }
 
     @PostMapping("checkin")
@@ -53,7 +59,7 @@ public class PartController {
     }
 
     @PostMapping("/update")
-    @ApiOperation("更新part")
+    @ApiOperation("更新Part")
     public Result update(@RequestBody PartModifyDTO dto) {
         PartUpdateDTO partUpdateDTO = new PartUpdateDTO();
         partUpdateDTO.setId(dto.getId());
@@ -79,7 +85,7 @@ public class PartController {
     }
 
     @PostMapping("/query")
-    @ApiOperation("请求part")
+    @ApiOperation("请求Part")
     public Result query(@RequestBody PartQueryDTO dto) {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
         if (dto.id == null && dto.name == null) {
@@ -103,6 +109,7 @@ public class PartController {
     public Result allVersions(@RequestBody PartVersionQueryDTO dto) {
         VersionMasterDTO versionMasterDTO = new VersionMasterDTO();
         versionMasterDTO.setMasterId(dto.getMasterId());
+        versionMasterDTO.setVersion(dto.getVersion());
         return Result.success(partDelegator.getAllVersions(versionMasterDTO, new RDMPageVO(dto.getCurPage(), dto.getPageSize())));
     }
 
@@ -112,15 +119,24 @@ public class PartController {
         VersionMasterQueryDTO versionMasterQueryDTO = new VersionMasterQueryDTO();
         versionMasterQueryDTO.setMasterId(dto.getMasterId());
         versionMasterQueryDTO.setVersion(dto.getVersion());
+        versionMasterQueryDTO.setIteration(dto.getIteration());
         return Result.success(partDelegator.getVersionByMaster(versionMasterQueryDTO));
     }
 
-    @PostMapping("/Delversion")
-    @ApiOperation("删除Part某一小版本")
+    @PostMapping("/delbranch")
+    @ApiOperation("删除Part分支")
     public Result delVersion(@RequestBody PartVersionQueryDTO dto) {
         VersionMasterModifierDTO versionMasterModifierDTO = new VersionMasterModifierDTO();
         versionMasterModifierDTO.setMasterId(dto.getMasterId());
         versionMasterModifierDTO.setVersion(dto.getVersion());
         return Result.success(partDelegator.deleteBranch(versionMasterModifierDTO));
+    }
+
+    @PostMapping("/revise/{masterId}")
+    @ApiOperation("修订Part")
+    public Result revise(@PathVariable Long masterId) {
+        VersionReviseDTO versionReviseDTO = new VersionReviseDTO();
+        versionReviseDTO.setMasterId(masterId);
+        return Result.success(partDelegator.revise(versionReviseDTO));
     }
 }
