@@ -1,33 +1,20 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.*;
-import com.huawei.innovation.rdm.coresdk.basic.vo.RDMResultVO;
-import com.huawei.innovation.rdm.delegate.common.XdmDelegateConsts;
 import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
-import com.huawei.innovation.rdm.san2.bean.relation.BOMLink;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.dto.relation.*;
-import com.huawei.innovation.rdm.san2.service.IBOMLinkService;
 import com.idme.minibom.Request.BOMLinkRequest;
 import com.idme.minibom.Result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
-import org.apache.catalina.realm.AuthenticatedUserRealm;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.naming.AuthenticationException;
-import java.lang.reflect.Type;
-import java.net.Authenticator;
-import java.sql.SQLOutput;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.concurrent.Exchanger;
 
 
 @Api(tags = "BOMLink管理相关接口")

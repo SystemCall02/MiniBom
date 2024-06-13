@@ -1,16 +1,11 @@
 package com.idme.minibom.Controller;
 
 
-import com.huawei.innovation.rdm.coresdk.basic.dto.MasterIdModifierDTO;
 import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdModifierDTO;
-import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.delegator.BOMUsesOccurrenceDelegator;
 import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceUpdateDTO;
 import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceViewDTO;
-import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkCreateDTO;
-import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkUpdateDTO;
-import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkViewDTO;
 import com.idme.minibom.Result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
