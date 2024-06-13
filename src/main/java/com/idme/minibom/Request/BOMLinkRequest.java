@@ -1,12 +1,9 @@
 package com.idme.minibom.Request;
 
-import com.huawei.innovation.rdm.coresdk.basic.dto.ObjectReferenceParamDTO;
 import lombok.Getter;
 import lombok.Setter;
 
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 @Setter
 @Getter
@@ -14,6 +11,7 @@ public class BOMLinkRequest {
     // Getters and Setters for source and target
     private Source source;
     private Target target;
+    //TODO 完善属性
 
     // Nested static classes for Source and Target
     @Setter
