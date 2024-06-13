@@ -1,12 +1,14 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.*;
+import com.huawei.innovation.rdm.coresdk.basic.vo.RDMResultVO;
 import com.huawei.innovation.rdm.delegate.common.XdmDelegateConsts;
 import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
 import com.huawei.innovation.rdm.san2.bean.relation.BOMLink;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.dto.relation.*;
 import com.huawei.innovation.rdm.san2.service.IBOMLinkService;
+import com.idme.minibom.Request.BOMLinkRequest;
 import com.idme.minibom.Result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +24,9 @@ import org.springframework.web.client.RestTemplate;
 import javax.naming.AuthenticationException;
 import java.lang.reflect.Type;
 import java.net.Authenticator;
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.Exchanger;
 
 
@@ -50,33 +55,41 @@ public class BOMLinkController {
     @Operation(
             summary = "BOMLink"
     )
-    public Result createBOMLink(@org.springframework.web.bind.annotation.RequestBody BOMLinkCreateDTO dto) {
+    public Result createBOMLink(@org.springframework.web.bind.annotation.RequestBody BOMLinkRequest dto) {
 
         //创建api地址
         String remoteApiUrl = "https://dme.cn-north-4.huaweicloud.com/rdm_83f47cac09064530837465ac4dd55c20_app/publicservices/api/BOMLink/create";
-
         HttpHeaders headers = new HttpHeaders();
-
-
         headers.setContentType(MediaType.APPLICATION_JSON);
-        BOMLinkCreateDTO createDTO = dto;
-
         //设置令牌
         headers.set("x-auth-token",tokenService.getToken());
 
-        HttpEntity<BOMLinkCreateDTO> requestEntity = new HttpEntity<>(createDTO, headers);
+
+     /*   HashMap<String,Object> params = new HashMap<>();
+        params.put("creator",dto.getCreator());
+        params.put("id",dto.getId());
+        params.put("source",dto.getSource());
+        params.put("target",dto.getTarget());
+*/
 
 
-        ResponseEntity<BOMLinkViewDTO> response = restTemplate.exchange(
+        //System.out.println(params);
+        HttpEntity<String> requestEntity = new HttpEntity<>(dto.toString(), headers);
+        //System.out.println(requestEntity.getBody());
+        System.out.println(requestEntity.getBody());
+
+        ResponseEntity<String> response = restTemplate.exchange(
                 remoteApiUrl,
                 HttpMethod.POST,
                 requestEntity,
-                BOMLinkViewDTO.class,
+                String.class,
                 new ParameterizedTypeReference<BOMLinkViewDTO>() {}
         );
 
-       //BOMLinkViewDTO viewDTO = response.getBody();
-        return Result.success(response.getBody());
+
+       String viewDTO = response.getBody();
+        System.out.println(viewDTO);
+        return Result.success();
 
      /*   BOMLinkViewDTO viewDTO;
         viewDTO=bomLinkDelegator.create(dto);
