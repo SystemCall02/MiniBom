@@ -1,14 +1,29 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.*;
+import com.huawei.innovation.rdm.delegate.common.XdmDelegateConsts;
+import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
+import com.huawei.innovation.rdm.san2.bean.relation.BOMLink;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.dto.relation.*;
+import com.huawei.innovation.rdm.san2.service.IBOMLinkService;
 import com.idme.minibom.Result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.Operation;
+import org.apache.catalina.realm.AuthenticatedUserRealm;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import javax.naming.AuthenticationException;
+import java.lang.reflect.Type;
+import java.net.Authenticator;
+import java.util.concurrent.Exchanger;
+
 
 @Api(tags = "BOMLink管理相关接口")
 @RequestMapping("/api/BOMLink")
@@ -18,13 +33,55 @@ public class BOMLinkController {
     @Autowired
     private BOMLinkDelegator bomLinkDelegator;
 
+    @Autowired
+    private  RestTemplate restTemplate;
+
+    //获取token
+    @Autowired
+    private XdmTokenService tokenService;
+
+    //IBOMLinkService service;
+
+
 //创建
-    @PostMapping("/create{id}")
+    @PostMapping("/create")
     @CrossOrigin
     @ApiOperation("创建BOMLink")
-    public Result createBOMLink(@RequestBody BOMLinkCreateDTO bomLinkCreateDTO) {
-         BOMLinkViewDTO bomLinkViewDTO=bomLinkDelegator.create(bomLinkCreateDTO);
-         return Result.success(bomLinkViewDTO);
+    @Operation(
+            summary = "BOMLink"
+    )
+    public Result createBOMLink(@org.springframework.web.bind.annotation.RequestBody BOMLinkCreateDTO dto) {
+
+        //创建api地址
+        String remoteApiUrl = "https://dme.cn-north-4.huaweicloud.com/rdm_83f47cac09064530837465ac4dd55c20_app/publicservices/api/BOMLink/create";
+
+        HttpHeaders headers = new HttpHeaders();
+
+
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        BOMLinkCreateDTO createDTO = dto;
+
+        //设置令牌
+        headers.set("x-auth-token",tokenService.getToken());
+
+        HttpEntity<BOMLinkCreateDTO> requestEntity = new HttpEntity<>(createDTO, headers);
+
+
+        ResponseEntity<BOMLinkViewDTO> response = restTemplate.exchange(
+                remoteApiUrl,
+                HttpMethod.POST,
+                requestEntity,
+                BOMLinkViewDTO.class,
+                new ParameterizedTypeReference<BOMLinkViewDTO>() {}
+        );
+
+       //BOMLinkViewDTO viewDTO = response.getBody();
+        return Result.success(response.getBody());
+
+     /*   BOMLinkViewDTO viewDTO;
+        viewDTO=bomLinkDelegator.create(dto);
+        return Result.success(viewDTO);*/
+
     }
 
 
@@ -48,23 +105,19 @@ public class BOMLinkController {
 public Result deleteBOMLink(@PathVariable Long id) {
     PersistObjectIdModifierDTO persistObjectIdModifierDTO=new PersistObjectIdModifierDTO();
     persistObjectIdModifierDTO.setId(id);
-    //bomLinkDelegator.delete(persistObjectIdModifierDTO);
     bomLinkDelegator.delete(persistObjectIdModifierDTO);
 
     return Result.success();
 }
-//
-/*@GetMapping("/getBOMLinks/{id}")
-public ResponseEntity<List<BOMLinkQueryViewDTO>> getBOMLinks(@PathVariable Long id) {
+/*
+//根据ID查询
+@GetMapping("/getBOMLinks}")
+public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody Long id) {
     QueryRequestVo queryRequestVo=new QueryRequestVo();
     RDMPageVO rdmPageVO=new RDMPageVO();
-    //*
-
-
-
-    //*
         List<BOMLinkQueryViewDTO> bomLinks = bomLinkDelegator.query(queryRequestVo,rdmPageVO);
         return new ResponseEntity<>(bomLinks, HttpStatus.OK);
-}*/
+}
+*/
 
 }
