@@ -76,22 +76,23 @@ public class BOMLinkController {
         //System.out.println(params);
         HttpEntity<String> requestEntity = new HttpEntity<>(dto.toString(), headers);
         //System.out.println(requestEntity.getBody());
-        System.out.println(requestEntity.getBody());
+       // System.out.println(requestEntity.getBody());
 
         ResponseEntity<String> response = restTemplate.exchange(
                 remoteApiUrl,
                 HttpMethod.POST,
                 requestEntity,
                 String.class,
-                new ParameterizedTypeReference<BOMLinkViewDTO>() {}
+                new ParameterizedTypeReference<String>() {}
         );
+     //   System.out.println(response);
 
 
        String viewDTO = response.getBody();
-        System.out.println(viewDTO);
-        return Result.success();
+      //  System.out.println(viewDTO);
+        return Result.success(viewDTO);
 
-     /*   BOMLinkViewDTO viewDTO;
+       /* BOMLinkViewDTO viewDTO;
         viewDTO=bomLinkDelegator.create(dto);
         return Result.success(viewDTO);*/
 

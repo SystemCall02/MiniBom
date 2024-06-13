@@ -31,7 +31,8 @@ public class BOMUsesOccurrenceController {
     @PostMapping("/create")
     @CrossOrigin
     @ApiOperation("创建BOMUsesOccurrence")
-    public Result createBOMUsesOccurrence(@RequestBody BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO) {
+    public Result createBOMUsesOccurrence(@org.springframework.web.bind.annotation.RequestBody BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO) {
+        System.out.println(bomUsesOccurrenceCreateDTO.getBomLink().getId());
         BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO=bomUsesOccurrenceDelegator.create(bomUsesOccurrenceCreateDTO);
         return Result.success(bomUsesOccurrenceViewDTO);
     }
