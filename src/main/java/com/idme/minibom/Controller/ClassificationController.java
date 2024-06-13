@@ -2,6 +2,7 @@ package com.idme.minibom.Controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdModifierDTO;
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
 import com.huawei.innovation.rdm.coresdk.basic.enums.JoinerType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryCondition;
@@ -9,6 +10,7 @@ import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.delegate.common.XdmDelegateConsts;
 import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
+import com.huawei.innovation.rdm.san2.delegator.PartDelegator;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeDelegator;
 import com.huawei.innovation.rdm.xdm.delegator.ClassificationNodeRelatedByTypeDefinitionDelegator;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeCreateDTO;
@@ -16,6 +18,8 @@ import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeQueryViewDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeUpdateDTO;
 import com.huawei.innovation.rdm.xdm.dto.entity.ClassificationNodeViewDTO;
 import com.idme.minibom.Constant.APIConstant;
+import com.idme.minibom.Constant.ExceptionConstant;
+import com.idme.minibom.Exception.ClassificationNodeDeleteNotAllowedException;
 import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.DTO.AddClassificationNodeAttrDTO;
 import com.idme.minibom.pojo.DTO.ClassificationQueryDTO;
@@ -45,6 +49,9 @@ public class ClassificationController {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private PartDelegator partDelegator;
 
 
 
@@ -225,6 +232,27 @@ public class ClassificationController {
 
         return Result.success();
 
+    }
+
+
+    @DeleteMapping("/delete/{id}")
+    @ApiOperation("删除分类节点")
+    public Result deleteClassificationNode(@PathVariable Long id){
+        if(!isClassificationNodeReferredNUll(id)){
+            throw new ClassificationNodeDeleteNotAllowedException(ExceptionConstant.Class_DELETE_NOT_ALLOWED);
+        }
+        PersistObjectIdModifierDTO persistObjectIdModifierDTO = new PersistObjectIdModifierDTO();
+        persistObjectIdModifierDTO.setId(id);
+        classificationNodeDelegator.delete(persistObjectIdModifierDTO);
+
+        return Result.success();
+    }
+
+
+    private boolean isClassificationNodeReferredNUll(Long id){
+        QueryRequestVo queryRequestVo = new QueryRequestVo();
+        queryRequestVo.addCondition("extAttrs.Classification",ConditionType.EQUAL,id);
+        return partDelegator.count(queryRequestVo) == 0;
     }
 
 
