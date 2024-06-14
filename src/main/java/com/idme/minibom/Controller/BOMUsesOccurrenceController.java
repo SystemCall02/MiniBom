@@ -1,6 +1,7 @@
 package com.idme.minibom.Controller;
 
 
+import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdDecryptDTO;
 import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdModifierDTO;
 import com.huawei.innovation.rdm.san2.delegator.BOMUsesOccurrenceDelegator;
 import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceCreateDTO;
@@ -56,5 +57,12 @@ public class BOMUsesOccurrenceController {
         return Result.success(bomUsesOccurrenceViewDTO);
     }
 
+    //根据ID获取BOMUsesOccurrence
+    @GetMapping("/get")
+    public Result getBOMUsesOccurrence(@org.springframework.web.bind.annotation.RequestBody PersistObjectIdDecryptDTO persistObjectIdDecryptDTO) {
+
+        BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO=bomUsesOccurrenceDelegator.get(persistObjectIdDecryptDTO);
+        return Result.success(bomUsesOccurrenceViewDTO);
+    }
 
 }
