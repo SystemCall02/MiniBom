@@ -66,12 +66,12 @@ public class BOMLinkController {
     }
 
 //删除
-@DeleteMapping("/delete/{id}")
+@DeleteMapping("/delete")
 @CrossOrigin
 @ApiOperation("删除BOMLink")
-public Result deleteBOMLink(@PathVariable Long id) {
-    PersistObjectIdModifierDTO persistObjectIdModifierDTO=new PersistObjectIdModifierDTO();
-    persistObjectIdModifierDTO.setId(id);
+public Result deleteBOMLink(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO) {
+    //PersistObjectIdModifierDTO persistObjectIdModifierDTO=new PersistObjectIdModifierDTO();
+    //persistObjectIdModifierDTO.setId(id);
     bomLinkDelegator.delete(persistObjectIdModifierDTO);
 
     return Result.success();
