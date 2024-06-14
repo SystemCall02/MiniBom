@@ -1,6 +1,8 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.*;
+import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
+import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.dto.relation.*;
@@ -9,9 +11,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 
 
 @Api(tags = "BOMLink管理相关接口")
@@ -22,14 +26,13 @@ public class BOMLinkController {
     @Autowired
     private BOMLinkDelegator bomLinkDelegator;
 
-    @Autowired
-    private  RestTemplate restTemplate;
+    //@Autowired
+  //  private  RestTemplate restTemplate;
 
     //获取token
-    @Autowired
-    private XdmTokenService tokenService;
+   // @Autowired
+    //private XdmTokenService tokenService;
 
-    //IBOMLinkService service;
 
 
 //创建
@@ -76,6 +79,8 @@ public Result deleteBOMLink(@PathVariable Long id) {
 
 //根据ID查询
 @GetMapping("/getBOMLinks")
+@CrossOrigin
+@ApiOperation("根据ID查询")
 public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  PersistObjectIdDecryptDTO persistObjectIdDecryptDTO) {
      //   PersistObjectIdDecryptDTO persistObjectIdDecryptDTO=new PersistObjectIdDecryptDTO();
       //  persistObjectIdDecryptDTO.setId(id);
@@ -83,5 +88,13 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
         return Result.success(viewDTO);
 }
 
+
+/*@GetMapping("/queryBOMLinks")
+@CrossOrigin
+@ApiOperation("根据条件分页查询")
+    public Result queryBOMLinks(@RequestBody QueryRequestVo queryRequestVo, RDMPageVO rdmPageVO) {
+        List<BOMLinkQueryViewDTO> queryViewDTO=bomLinkDelegator.query(queryRequestVo,rdmPageVO);
+        return Result.success(queryViewDTO);
+}*/
 
 }
