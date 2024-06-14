@@ -109,6 +109,7 @@ public class PartController {
     public Result allVersions(@RequestBody PartVersionQueryDTO dto) {
         VersionMasterDTO versionMasterDTO = new VersionMasterDTO();
         versionMasterDTO.setMasterId(dto.getMasterId());
+        versionMasterDTO.setVersion(dto.getVersion());
         return Result.success(partDelegator.getAllVersions(versionMasterDTO, new RDMPageVO(dto.getCurPage(), dto.getPageSize())));
     }
 
@@ -118,15 +119,24 @@ public class PartController {
         VersionMasterQueryDTO versionMasterQueryDTO = new VersionMasterQueryDTO();
         versionMasterQueryDTO.setMasterId(dto.getMasterId());
         versionMasterQueryDTO.setVersion(dto.getVersion());
+        versionMasterQueryDTO.setIteration(dto.getIteration());
         return Result.success(partDelegator.getVersionByMaster(versionMasterQueryDTO));
     }
 
-    @PostMapping("/Delversion")
-    @ApiOperation("删除Part某一小版本")
+    @PostMapping("/delbranch")
+    @ApiOperation("删除Part分支")
     public Result delVersion(@RequestBody PartVersionQueryDTO dto) {
         VersionMasterModifierDTO versionMasterModifierDTO = new VersionMasterModifierDTO();
         versionMasterModifierDTO.setMasterId(dto.getMasterId());
         versionMasterModifierDTO.setVersion(dto.getVersion());
         return Result.success(partDelegator.deleteBranch(versionMasterModifierDTO));
+    }
+
+    @PostMapping("/revise/{masterId}")
+    @ApiOperation("修订Part")
+    public Result revise(@PathVariable Long masterId) {
+        VersionReviseDTO versionReviseDTO = new VersionReviseDTO();
+        versionReviseDTO.setMasterId(masterId);
+        return Result.success(partDelegator.revise(versionReviseDTO));
     }
 }

@@ -1,14 +1,22 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.*;
+import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
+import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
+import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.dto.relation.*;
 import com.idme.minibom.Result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
 
 @Api(tags = "BOMLink管理相关接口")
 @RequestMapping("/api/BOMLink")
@@ -18,13 +26,29 @@ public class BOMLinkController {
     @Autowired
     private BOMLinkDelegator bomLinkDelegator;
 
+    //@Autowired
+  //  private  RestTemplate restTemplate;
+
+    //获取token
+   // @Autowired
+    //private XdmTokenService tokenService;
+
+
+
 //创建
-    @PostMapping("/create{id}")
+    //json格式与postman调用url不同
+    @PostMapping("/create")
     @CrossOrigin
     @ApiOperation("创建BOMLink")
-    public Result createBOMLink(@RequestBody BOMLinkCreateDTO bomLinkCreateDTO) {
-         BOMLinkViewDTO bomLinkViewDTO=bomLinkDelegator.create(bomLinkCreateDTO);
-         return Result.success(bomLinkViewDTO);
+    @Operation(
+            summary = "BOMLink"
+    )
+    public Result createBOMLink(@org.springframework.web.bind.annotation.RequestBody BOMLinkCreateDTO dto) {
+
+        BOMLinkViewDTO viewDTO;
+        viewDTO=bomLinkDelegator.create(dto);
+        return Result.success(viewDTO);
+
     }
 
 
@@ -48,23 +72,29 @@ public class BOMLinkController {
 public Result deleteBOMLink(@PathVariable Long id) {
     PersistObjectIdModifierDTO persistObjectIdModifierDTO=new PersistObjectIdModifierDTO();
     persistObjectIdModifierDTO.setId(id);
-    //bomLinkDelegator.delete(persistObjectIdModifierDTO);
     bomLinkDelegator.delete(persistObjectIdModifierDTO);
 
     return Result.success();
 }
-//
-/*@GetMapping("/getBOMLinks/{id}")
-public ResponseEntity<List<BOMLinkQueryViewDTO>> getBOMLinks(@PathVariable Long id) {
-    QueryRequestVo queryRequestVo=new QueryRequestVo();
-    RDMPageVO rdmPageVO=new RDMPageVO();
-    //*
+
+//根据ID查询
+@GetMapping("/getBOMLinks")
+@CrossOrigin
+@ApiOperation("根据ID查询")
+public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  PersistObjectIdDecryptDTO persistObjectIdDecryptDTO) {
+     //   PersistObjectIdDecryptDTO persistObjectIdDecryptDTO=new PersistObjectIdDecryptDTO();
+      //  persistObjectIdDecryptDTO.setId(id);
+        BOMLinkViewDTO viewDTO=bomLinkDelegator.get(persistObjectIdDecryptDTO);
+        return Result.success(viewDTO);
+}
 
 
-
-    //*
-        List<BOMLinkQueryViewDTO> bomLinks = bomLinkDelegator.query(queryRequestVo,rdmPageVO);
-        return new ResponseEntity<>(bomLinks, HttpStatus.OK);
+/*@GetMapping("/queryBOMLinks")
+@CrossOrigin
+@ApiOperation("根据条件分页查询")
+    public Result queryBOMLinks(@RequestBody QueryRequestVo queryRequestVo, RDMPageVO rdmPageVO) {
+        List<BOMLinkQueryViewDTO> queryViewDTO=bomLinkDelegator.query(queryRequestVo,rdmPageVO);
+        return Result.success(queryViewDTO);
 }*/
 
 }
