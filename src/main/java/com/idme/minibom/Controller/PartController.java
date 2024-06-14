@@ -105,7 +105,7 @@ public class PartController {
     }
 
     @PostMapping("/allversions")
-    @ApiOperation("获取Part所有版本")
+    @ApiOperation("获取Part某个大版本下的所有小版本")
     public Result allVersions(@RequestBody PartVersionQueryDTO dto) {
         VersionMasterDTO versionMasterDTO = new VersionMasterDTO();
         versionMasterDTO.setMasterId(dto.getMasterId());
@@ -114,7 +114,7 @@ public class PartController {
     }
 
     @PostMapping("/version")
-    @ApiOperation("获取Part对应版本信息")
+    @ApiOperation("获取Part某个小版本信息")
     public Result version(@RequestBody PartVersionQueryDTO dto) {
         VersionMasterQueryDTO versionMasterQueryDTO = new VersionMasterQueryDTO();
         versionMasterQueryDTO.setMasterId(dto.getMasterId());
@@ -133,7 +133,7 @@ public class PartController {
     }
 
     @PostMapping("/revise/{masterId}")
-    @ApiOperation("修订Part")
+    @ApiOperation("修订Part(添加大版本)")
     public Result revise(@PathVariable Long masterId) {
         VersionReviseDTO versionReviseDTO = new VersionReviseDTO();
         versionReviseDTO.setMasterId(masterId);
