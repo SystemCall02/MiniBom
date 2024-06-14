@@ -34,12 +34,12 @@ public class BOMUsesOccurrenceController {
     //    "message": "[bomLink] can not be null;",
 
     //删除
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     @CrossOrigin
     @ApiOperation("删除BOMUsesOccurrence")
-    public Result deleteBOMUserOccurrence(@PathVariable Long id) {
-        PersistObjectIdModifierDTO persistObjectIdModifierDTO=new PersistObjectIdModifierDTO();
-        persistObjectIdModifierDTO.setId(id);
+    public Result deleteBOMUserOccurrence(@org.springframework.web.bind.annotation.RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO) {
+      //  PersistObjectIdModifierDTO persistObjectIdModifierDTO=new PersistObjectIdModifierDTO();
+       // persistObjectIdModifierDTO.setId(id);
         return Result.success(bomUsesOccurrenceDelegator.delete(persistObjectIdModifierDTO));
     }
 
