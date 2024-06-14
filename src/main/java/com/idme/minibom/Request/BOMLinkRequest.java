@@ -11,7 +11,7 @@ public class BOMLinkRequest {
     // Getters and Setters for source and target
     private Source source;
     private Target target;
-    //TODO 完善属性
+
 
     // Nested static classes for Source and Target
     @Setter
