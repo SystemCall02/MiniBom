@@ -23,6 +23,7 @@ import com.idme.minibom.Exception.ClassificationNodeDeleteNotAllowedException;
 import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.DTO.AddClassificationNodeAttrDTO;
 import com.idme.minibom.pojo.DTO.ClassificationQueryDTO;
+import com.idme.minibom.pojo.DTO.DeleteClassificationNodeAttrDTO;
 import com.idme.minibom.pojo.VO.ClassificationQueryVO;
 import com.idme.minibom.pojo.VO.ClassificationTreeVO;
 import com.idme.minibom.pojo.VO.QueryClassificationNodeAttrVO;
@@ -198,8 +199,11 @@ public class ClassificationController {
         JSONArray attrs = body.getJSONArray("data").getJSONObject(0).getJSONArray("attrs");
         for (int i=0;i<attrs.size();i++){
             QueryClassificationNodeAttrVO queryClassificationNodeAttrVO = new QueryClassificationNodeAttrVO();
+            queryClassificationNodeAttrVO.setId(attrs.getJSONObject(i).getLong("id"));
             queryClassificationNodeAttrVO.setName(attrs.getJSONObject(i).getString("name"));
             queryClassificationNodeAttrVO.setNameEn(attrs.getJSONObject(i).getString("nameEn"));
+            queryClassificationNodeAttrVO.setDescription(attrs.getJSONObject(i).getString("description"));
+            queryClassificationNodeAttrVO.setDescriptionEn(attrs.getJSONObject(i).getString("descriptionEn"));
             result.add(queryClassificationNodeAttrVO);
         }
 
@@ -253,6 +257,28 @@ public class ClassificationController {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
         queryRequestVo.addCondition("extAttrs.Classification",ConditionType.EQUAL,id);
         return partDelegator.count(queryRequestVo) == 0;
+    }
+
+    /**
+     * 删除分类属性，需注意传入的是方法《查询分类属性》中代表分类和属性之间关联的ID，并非属性本身的ID
+     * @param deleteClassificationNodeAttrDTO
+     * @return
+     */
+    @DeleteMapping("/deleteAttr")
+    @ApiOperation("删除分类属性")
+    public Result deleteClassificationNodeAttr(@RequestBody DeleteClassificationNodeAttrDTO deleteClassificationNodeAttrDTO){
+        String url = APIConstant.ENDPOINT+"/ClassificationNode/attribute/remove";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(XdmDelegateConsts.X_AUTH_TOKEN,tokenService.getToken());
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("linkIds",deleteClassificationNodeAttrDTO.getLinkIds());
+        JSONObject params = new JSONObject();
+        params.put("params",jsonObject);
+        HttpEntity<JSONObject> request = new HttpEntity<>(params,headers);
+        restTemplate.postForEntity(url,request, JSONObject.class);
+
+        return Result.success();
     }
 
 
