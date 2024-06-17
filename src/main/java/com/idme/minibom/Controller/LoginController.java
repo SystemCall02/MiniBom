@@ -5,6 +5,11 @@ import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.san2.delegator.UserDelegator;
 import com.huawei.innovation.rdm.san2.dto.entity.*;
 
+import com.idme.minibom.Constant.ExceptionConstant;
+import com.idme.minibom.Constant.LoginConstant;
+import com.idme.minibom.Exception.PasswordErrorException;
+import com.idme.minibom.Exception.UserNotFountException;
+import com.idme.minibom.Exception.UsernameExistException;
 import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.DTO.LoginDTO;
 import com.idme.minibom.utils.AESUtil;
@@ -32,10 +37,11 @@ public class LoginController {
      */
     @ApiOperation("查询用户名是否存在")
     @PostMapping("/find")
-    public List<UserViewDTO> find(String name) {
+    public Result find(String name) {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
         queryRequestVo.addCondition("name", ConditionType.EQUAL,name);
-        return userDelegator.find(queryRequestVo, new RDMPageVO(1, 10));
+        Long count = userDelegator.count(queryRequestVo);
+        return Result.success(count);
     }
 
     /**
@@ -46,23 +52,41 @@ public class LoginController {
     @ApiOperation("用户登录")
     @PostMapping("/login")
     public Result login(@RequestBody LoginDTO loginDTO) throws Exception {
-        List<UserViewDTO> userViewDTOS = find(loginDTO.getName());
+        QueryRequestVo queryRequestVo = new QueryRequestVo();
+        queryRequestVo.addCondition("name", ConditionType.EQUAL,loginDTO.getName());
+        List<UserViewDTO> userViewDTOS = userDelegator.find(queryRequestVo, new RDMPageVO(1, 10));
+
         UserViewDTO responseResult = new UserViewDTO();
         if(userViewDTOS==null||userViewDTOS.isEmpty()){
-            //Exception
-            return Result.error(404,"用户不存在");
+            throw new UserNotFountException(ExceptionConstant.USER_NOT_FOUNT);
         }
         UserViewDTO queryResult = userViewDTOS.get(0);
-        //password加密 DigestUtils.md5DigestAsHex()
-        loginDTO.setPassword(AESUtil.decrypt(loginDTO.getPassword()));
-        if(!loginDTO.getPassword().equals(queryResult.getPassword())){
-            //Exception
-            return Result.error(400,"用户账号或密码错误");
+        String password = AESUtil.encrypt(loginDTO.getPassword());
+        if(password.equals(queryResult.getPassword())){
+           throw new PasswordErrorException(ExceptionConstant.PASSWORD_ERROR);
         }
 
         responseResult.setName(loginDTO.getName());
         responseResult.setId(queryResult.getId());
 
-        return Result.success("登录成功",responseResult);
+        return Result.success(LoginConstant.LOGIN_SUCCESS,responseResult);
+    }
+
+
+    @PostMapping("/register")
+    @ApiOperation("用户注册")
+    public Result userRegister(@RequestBody UserCreateDTO userCreateDTO) throws Exception {
+        QueryRequestVo queryRequestVo = new QueryRequestVo();
+        queryRequestVo.addCondition("name", ConditionType.EQUAL,userCreateDTO.getName());
+        Long count = userDelegator.count(queryRequestVo);
+
+        if(count != 0){
+            throw new UsernameExistException(ExceptionConstant.USERNAME_EXIST);
+        }
+
+        userCreateDTO.setPassword(AESUtil.encrypt(userCreateDTO.getPassword()));
+        userDelegator.create(userCreateDTO);
+
+        return Result.success();
     }
 }
