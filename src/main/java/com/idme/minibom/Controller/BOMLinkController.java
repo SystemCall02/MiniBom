@@ -87,6 +87,17 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
         return Result.success(viewDTO);
 }
 
+//获取父项
+    @PostMapping ("/queryTarget/{pageSize}/{curPage}")
+    @CrossOrigin
+    @ApiOperation("获取父项")
+    public Result queryTarget(@RequestBody GenericLinkTypeDTO genericLinkTypeDTO,@PathVariable int pageSize, @PathVariable int curPage) {
+     //   bomLinkDelegator.queryTarget(genericLinkTypeDTO,rdmPageVO);
+        RDMPageVO rdmPageVO=new RDMPageVO();
+        rdmPageVO.setPageSize(pageSize);
+        rdmPageVO.setCurPage(curPage);
+        return Result.success(bomLinkDelegator.queryTarget(genericLinkTypeDTO,rdmPageVO));
+    }
 
 /*@GetMapping("/queryBOMLinks")
 @CrossOrigin
