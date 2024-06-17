@@ -53,11 +53,10 @@ public class BOMLinkController {
 
 
 //修改
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     @CrossOrigin
     @ApiOperation("修改BOMLink")
     public Result updateBOMLink(@RequestBody BOMLinkUpdateDTO bomLinkUpdateDTO) {
-       // @RequestBody BOMLinkUpdateDTO bomLinkUpdateDTO
         // 使用代理接口调用修改BOMLink的方法
 
         BOMLinkViewDTO bomLinkViewDTO=bomLinkDelegator.update(bomLinkUpdateDTO);

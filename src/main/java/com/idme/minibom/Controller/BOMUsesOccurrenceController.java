@@ -10,7 +10,6 @@ import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceViewDTO;
 import com.idme.minibom.Result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,12 +44,10 @@ public class BOMUsesOccurrenceController {
     }
 
     //修改
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     @CrossOrigin
     @ApiOperation("修改BOMUsesOccurrence")
     public Result updateBOMLink(@RequestBody BOMUsesOccurrenceUpdateDTO bomUsesOccurrenceUpdateDTO) {
-        // @RequestBody BOMLinkUpdateDTO bomLinkUpdateDTO
-        // 使用代理接口调用修改BOMLink的方法
 
         BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO= bomUsesOccurrenceDelegator.update(bomUsesOccurrenceUpdateDTO);
         // 构建成功响应
