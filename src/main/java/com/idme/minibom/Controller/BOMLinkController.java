@@ -87,10 +87,10 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
         return Result.success(viewDTO);
 }
 
-//获取父项
+//获取子项
     @PostMapping ("/queryTarget/{pageSize}/{curPage}")
     @CrossOrigin
-    @ApiOperation("获取父项")
+    @ApiOperation("获取子项")
     public Result queryTarget(@RequestBody GenericLinkTypeDTO genericLinkTypeDTO,@PathVariable int pageSize, @PathVariable int curPage) {
      //   bomLinkDelegator.queryTarget(genericLinkTypeDTO,rdmPageVO);
         RDMPageVO rdmPageVO=new RDMPageVO();
@@ -98,7 +98,19 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
         rdmPageVO.setCurPage(curPage);
         return Result.success(bomLinkDelegator.queryTarget(genericLinkTypeDTO,rdmPageVO));
     }
-
+//获取父项或子项
+    //传入Source：获取子项
+    //传入Target：获取父项
+    @PostMapping("/queryRelatedPart/{pageSize}/{curPage}")
+    @CrossOrigin
+    @ApiOperation("获取父项")
+    public Result queryRelatedPart(@RequestBody GenericLinkQueryDTO genericLinkQueryDTO,@PathVariable int pageSize, @PathVariable int curPage){
+       RDMPageVO rdmPageVO=new RDMPageVO();
+       rdmPageVO.setPageSize(pageSize);
+       rdmPageVO.setCurPage(curPage);
+     //  bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
+       return Result.success(bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO));
+    }
 /*@GetMapping("/queryBOMLinks")
 @CrossOrigin
 @ApiOperation("根据条件分页查询")
