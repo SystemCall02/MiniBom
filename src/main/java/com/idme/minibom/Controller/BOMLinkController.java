@@ -113,27 +113,7 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
        return Result.success(bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO));
     }
 
- /*   //ToDo 展示所有子项
-    public Result showAllChilds(ObjectReferenceParamDTO source,ObjectReferenceParamDTO target){
-        BOMLinkCreateDTO bomLinkCreateDTO=new BOMLinkCreateDTO();
-        BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO=new BOMUsesOccurrenceCreateDTO();
-     //   ObjectReferenceParamDTO objectReferenceParamDTO=new ObjectReferenceParamDTO();
-        bomLinkCreateDTO.setSource(source);
-        bomLinkCreateDTO.setTarget(target);
-        bomLinkDelegator.create(bomLinkCreateDTO);
 
 
-
-        return Result.success();
-    }
-*/
-
-/*@GetMapping("/queryBOMLinks")
-@CrossOrigin
-@ApiOperation("根据条件分页查询")
-    public Result queryBOMLinks(@RequestBody QueryRequestVo queryRequestVo, RDMPageVO rdmPageVO) {
-        List<BOMLinkQueryViewDTO> queryViewDTO=bomLinkDelegator.query(queryRequestVo,rdmPageVO);
-        return Result.success(queryViewDTO);
-}*/
 
 }

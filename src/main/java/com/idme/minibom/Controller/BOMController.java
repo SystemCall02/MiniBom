@@ -1,6 +1,8 @@
 package com.idme.minibom.Controller;
 
+import com.huawei.innovation.rdm.coresdk.basic.dto.GenericLinkQueryDTO;
 import com.huawei.innovation.rdm.coresdk.basic.dto.ObjectReferenceParamDTO;
+import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.san2.bean.relation.BOMLink;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.delegator.BOMUsesOccurrenceDelegator;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Api(tags = "BOM管理相关接口")
 @RequestMapping("/api/BOM")
@@ -34,26 +37,42 @@ public class BOMController {
     @PostMapping("/create")
     @CrossOrigin
     @ApiOperation("创建BOM")
-    public Result showAllChildren(@RequestBody BOMDTO bomdto){
+    public Result createChildren(@RequestBody BOMDTO bomdto){
         BOMLinkCreateDTO bomLinkCreateDTO=new BOMLinkCreateDTO();
         BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO=new BOMUsesOccurrenceCreateDTO();
         ObjectReferenceParamDTO bomLink=new ObjectReferenceParamDTO();
         ObjectReferenceParamDTO source=new ObjectReferenceParamDTO();
         ObjectReferenceParamDTO target=new ObjectReferenceParamDTO();
 
-       // System.out.println(sourceId);
         source.setId(bomdto.getSourceId());
         target.setId(bomdto.getTargetId());
         bomLinkCreateDTO.setSource(source);
         bomLinkCreateDTO.setTarget(target);
+        bomLinkCreateDTO.setQuantity(bomdto.getQuantity());
         BOMLinkViewDTO bomLinkViewDTO=bomLinkDelegator.create(bomLinkCreateDTO);
 
         bomLink.setId(bomLinkViewDTO.getId());
         bomUsesOccurrenceCreateDTO.setBomLink(bomLink);
+        bomUsesOccurrenceCreateDTO.setReferenceDesignator(bomdto.getReferenceDes());
         BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO=bomUsesOccurrenceDelegator.create(bomUsesOccurrenceCreateDTO);
 
-        bomLinkViewDTO.setQuantity(bomdto.getQuantity());
-        bomUsesOccurrenceViewDTO.setReferenceDesignator(bomdto.getReferenceDes());
+        //bomLinkViewDTO.setQuantity(bomdto.getQuantity());
+        //bomUsesOccurrenceViewDTO.setReferenceDesignator(bomdto.getReferenceDes());
         return Result.success(bomUsesOccurrenceViewDTO);
     }
+
+    //展示所有子项
+    @PostMapping("/show")
+    @CrossOrigin
+    @ApiOperation("展示所有子项")
+    public Result showAllChilds(@RequestBody GenericLinkQueryDTO genericLinkQueryDTO, @PathVariable int pageSize, @PathVariable int curPage){
+        RDMPageVO rdmPageVO=new RDMPageVO();
+        rdmPageVO.setPageSize(pageSize);
+        rdmPageVO.setCurPage(curPage);
+        List children=bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
+        List<BOMLinkViewDTO> bomlinks=bomLinkDelegator.queryRelationship(genericLinkQueryDTO,rdmPageVO);
+
+        return Result.success();
+    }
+
 }
