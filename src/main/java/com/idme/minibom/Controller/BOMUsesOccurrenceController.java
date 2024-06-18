@@ -27,7 +27,7 @@ public class BOMUsesOccurrenceController {
     @CrossOrigin
     @ApiOperation("创建BOMUsesOccurrence")
     public Result createBOMUsesOccurrence(@org.springframework.web.bind.annotation.RequestBody BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO) {
-        System.out.println(bomUsesOccurrenceCreateDTO.getBomLink().getId());
+     //   System.out.println(bomUsesOccurrenceCreateDTO.getBomLink().getId());
         BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO=bomUsesOccurrenceDelegator.create(bomUsesOccurrenceCreateDTO);
         return Result.success(bomUsesOccurrenceViewDTO);
     }

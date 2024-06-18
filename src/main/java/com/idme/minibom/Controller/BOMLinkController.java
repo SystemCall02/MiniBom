@@ -5,6 +5,7 @@ import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
+import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.relation.*;
 import com.idme.minibom.Result.Result;
 import io.swagger.annotations.Api;
@@ -103,7 +104,7 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
     //传入Target：获取父项
     @PostMapping("/queryRelatedPart/{pageSize}/{curPage}")
     @CrossOrigin
-    @ApiOperation("获取父项")
+    @ApiOperation("获取相关项")
     public Result queryRelatedPart(@RequestBody GenericLinkQueryDTO genericLinkQueryDTO,@PathVariable int pageSize, @PathVariable int curPage){
        RDMPageVO rdmPageVO=new RDMPageVO();
        rdmPageVO.setPageSize(pageSize);
@@ -111,6 +112,22 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
      //  bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
        return Result.success(bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO));
     }
+
+ /*   //ToDo 展示所有子项
+    public Result showAllChilds(ObjectReferenceParamDTO source,ObjectReferenceParamDTO target){
+        BOMLinkCreateDTO bomLinkCreateDTO=new BOMLinkCreateDTO();
+        BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO=new BOMUsesOccurrenceCreateDTO();
+     //   ObjectReferenceParamDTO objectReferenceParamDTO=new ObjectReferenceParamDTO();
+        bomLinkCreateDTO.setSource(source);
+        bomLinkCreateDTO.setTarget(target);
+        bomLinkDelegator.create(bomLinkCreateDTO);
+
+
+
+        return Result.success();
+    }
+*/
+
 /*@GetMapping("/queryBOMLinks")
 @CrossOrigin
 @ApiOperation("根据条件分页查询")
