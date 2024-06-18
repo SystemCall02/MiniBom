@@ -14,12 +14,14 @@ import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceViewDTO;
 import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkViewDTO;
 import com.idme.minibom.Result.Result;
+import com.idme.minibom.pojo.Class.BOM;
 import com.idme.minibom.pojo.DTO.BOMDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Api(tags = "BOM管理相关接口")
@@ -63,17 +65,45 @@ public class BOMController {
     }
 
     //展示所有子项
-    @PostMapping("/show")
+    @PostMapping("/show/{pageSize}/{curPage}")
     @CrossOrigin
     @ApiOperation("展示所有子项")
-    public Result showAllChilds(@RequestBody GenericLinkQueryDTO genericLinkQueryDTO, @PathVariable int pageSize, @PathVariable int curPage){
+    public Result showAllChildren(@RequestBody GenericLinkQueryDTO genericLinkQueryDTO, @PathVariable int pageSize, @PathVariable int curPage){
         RDMPageVO rdmPageVO=new RDMPageVO();
         rdmPageVO.setPageSize(pageSize);
         rdmPageVO.setCurPage(curPage);
-        List children=bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
-        List<BOMLinkViewDTO> bomlinks=bomLinkDelegator.queryRelationship(genericLinkQueryDTO,rdmPageVO);
 
-        return Result.success();
+        //role设置为source，输出target
+        genericLinkQueryDTO.setRole("source");
+
+        //List children=bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
+
+        //role 设置为source，输出以其为source的BOMLink
+        List<BOMLinkViewDTO> bomlinks=bomLinkDelegator.queryRelationship(genericLinkQueryDTO,rdmPageVO);
+        //System.out.println(bomlinks.get(0));
+        List<BOM> boms= new ArrayList<>();
+        BOM bom=new BOM();
+     for(BOMLinkViewDTO bomLinkViewDTO:bomlinks){
+         //查询条件
+         QueryRequestVo queryRequestVo=new QueryRequestVo();
+         queryRequestVo.addCondition("bomLink.id",ConditionType.EQUAL,bomLinkViewDTO.getId());
+         List<BOMUsesOccurrenceViewDTO> bomUsesOccurrenceViewDTOS=bomUsesOccurrenceDelegator.find(queryRequestVo,rdmPageVO);
+         //设置bom属性
+         if(bomUsesOccurrenceViewDTOS!=null&& !bomUsesOccurrenceViewDTOS.isEmpty()){
+             bom.setQuantity(bomLinkViewDTO.getQuantity());
+             bom.setReferenceDes(bomUsesOccurrenceViewDTOS.get(0).getReferenceDesignator());
+             bom.setTargetId(bomLinkViewDTO.getTarget().getId());
+             bom.setTargetName(bomLinkViewDTO.getTarget().getName());
+             //加入boms
+             boms.add(bom);
+         }
+
+
+     }
+      //  System.out.println(boms.get(0));
+        //System.out.println(bomlinks.size());
+
+        return Result.success(boms);
     }
 
     //删除BOM子项
