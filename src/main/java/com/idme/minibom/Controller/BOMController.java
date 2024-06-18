@@ -82,7 +82,7 @@ public class BOMController {
         List<BOMLinkViewDTO> bomlinks=bomLinkDelegator.queryRelationship(genericLinkQueryDTO,rdmPageVO);
         //System.out.println(bomlinks.get(0));
         List<BOM> boms= new ArrayList<>();
-        BOM bom=new BOM();
+
      for(BOMLinkViewDTO bomLinkViewDTO:bomlinks){
          //查询条件
          QueryRequestVo queryRequestVo=new QueryRequestVo();
@@ -90,6 +90,7 @@ public class BOMController {
          List<BOMUsesOccurrenceViewDTO> bomUsesOccurrenceViewDTOS=bomUsesOccurrenceDelegator.find(queryRequestVo,rdmPageVO);
          //设置bom属性
          if(bomUsesOccurrenceViewDTOS!=null&& !bomUsesOccurrenceViewDTOS.isEmpty()){
+             BOM bom=new BOM();
              bom.setQuantity(bomLinkViewDTO.getQuantity());
              bom.setReferenceDes(bomUsesOccurrenceViewDTOS.get(0).getReferenceDesignator());
              bom.setTargetId(bomLinkViewDTO.getTarget().getId());
