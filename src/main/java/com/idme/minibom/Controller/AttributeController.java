@@ -25,9 +25,9 @@ import com.idme.minibom.pojo.DTO.AttributeQueryDTO;
 import com.idme.minibom.pojo.VO.AttributeQueryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.hibernate.mapping.Join;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
