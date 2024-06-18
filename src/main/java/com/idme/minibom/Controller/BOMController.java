@@ -2,8 +2,11 @@ package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.GenericLinkQueryDTO;
 import com.huawei.innovation.rdm.coresdk.basic.dto.ObjectReferenceParamDTO;
+import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdModifierDTO;
+import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
+import com.huawei.innovation.rdm.coresdk.basic.vo.DeleteByConditionVo;
+import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
-import com.huawei.innovation.rdm.san2.bean.relation.BOMLink;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.delegator.BOMUsesOccurrenceDelegator;
 import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceCreateDTO;
@@ -14,11 +17,9 @@ import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.DTO.BOMDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Api(tags = "BOM管理相关接口")
@@ -73,6 +74,25 @@ public class BOMController {
         List<BOMLinkViewDTO> bomlinks=bomLinkDelegator.queryRelationship(genericLinkQueryDTO,rdmPageVO);
 
         return Result.success();
+    }
+
+    //删除BOM子项
+    @DeleteMapping("/delete")
+    @CrossOrigin
+    @ApiOperation("删除所选子项")
+    public Result delete(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO){
+
+        //删除所有引用
+        DeleteByConditionVo deleteByConditionVo=new DeleteByConditionVo();
+        QueryRequestVo queryRequestVo=new QueryRequestVo();
+
+        //查询name为bomLink.id
+        queryRequestVo.addCondition("bomLink.id", ConditionType.EQUAL,persistObjectIdModifierDTO.getId());
+        deleteByConditionVo.setCondition(queryRequestVo);
+        bomUsesOccurrenceDelegator.delete(persistObjectIdModifierDTO);
+        bomUsesOccurrenceDelegator.deleteByCondition(deleteByConditionVo);
+        //persistObjectIdModifierDTO.getId();
+        return Result.success(bomLinkDelegator.delete(persistObjectIdModifierDTO));
     }
 
 }
