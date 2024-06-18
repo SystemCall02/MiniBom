@@ -85,12 +85,9 @@ public class PartController {
     }
 
     @PostMapping("/query")
-    @ApiOperation("请求Part")
+    @ApiOperation("请求Part，如果id和name都为空，则返回所有Part")
     public Result query(@RequestBody PartQueryDTO dto) {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
-        if (dto.id == null && dto.name == null) {
-            queryRequestVo.setIsNeedTotal(true);
-        }
         if (dto.id != null) {
             queryRequestVo.addCondition("id", ConditionType.EQUAL, dto.id);
         }
@@ -121,6 +118,14 @@ public class PartController {
         versionMasterQueryDTO.setVersion(dto.getVersion());
         versionMasterQueryDTO.setIteration(dto.getIteration());
         return Result.success(partDelegator.getVersionByMaster(versionMasterQueryDTO));
+    }
+
+    @PostMapping("/latest/{id}")
+    @ApiOperation("获取Part最新分支的最新版本的信息")
+    public Result latest(@PathVariable Long id) {
+        PersistObjectIdDecryptDTO dto = new PersistObjectIdDecryptDTO();
+        dto.setId(id);
+        return Result.success(partDelegator.get(dto));
     }
 
     @PostMapping("/delbranch")
