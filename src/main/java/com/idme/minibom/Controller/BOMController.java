@@ -66,7 +66,7 @@ public class BOMController {
 
     //展示所有子项
     //可增加几个属性如ID属性等
-    //ToDo 修改输出
+    //ToDo 修改输出，错误处理
     @PostMapping("/show/{pageSize}/{curPage}")
     @CrossOrigin
     @ApiOperation("展示所有子项")
@@ -75,18 +75,17 @@ public class BOMController {
         rdmPageVO.setPageSize(pageSize);
         rdmPageVO.setCurPage(curPage);
 
-        //role设置为source，输出target
-        genericLinkQueryDTO.setRole("source");
+        //role设置为target，输出以其为父项的BOMLink
+        genericLinkQueryDTO.setRole("target");
 
         //List children=bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
 
-        //role 设置为source，输出以其为source的BOMLink
         List<BOMLinkViewDTO> bomlinks=bomLinkDelegator.queryRelationship(genericLinkQueryDTO,rdmPageVO);
         //System.out.println(bomlinks.get(0));
         List<BOM> boms= new ArrayList<>();
 
      for(BOMLinkViewDTO bomLinkViewDTO:bomlinks){
-         //查询条件
+         //查询BOMLink对应BOMUseOccurrence
          QueryRequestVo queryRequestVo=new QueryRequestVo();
          queryRequestVo.addCondition("bomLink.id",ConditionType.EQUAL,bomLinkViewDTO.getId());
          List<BOMUsesOccurrenceViewDTO> bomUsesOccurrenceViewDTOS=bomUsesOccurrenceDelegator.find(queryRequestVo,rdmPageVO);
@@ -96,8 +95,8 @@ public class BOMController {
              bom.setQuantity(bomLinkViewDTO.getQuantity());
              bom.setReferenceDes(bomUsesOccurrenceViewDTOS.get(0).getReferenceDesignator());
              //获取编码
-             bom.setTargetId(bomLinkViewDTO.getTarget().getId());
-             bom.setTargetName(bomLinkViewDTO.getTarget().getName());
+             bom.setSourceId(bomLinkViewDTO.getSource().getId());
+             bom.setSourceName(bomLinkViewDTO.getSource().getName());
              //加入boms
              boms.add(bom);
          }

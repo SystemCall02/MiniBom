@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class BOM {
-    private Long targetId;
-    private String targetName;
+    private Long sourceId;
+    private String sourceName;
     private BigDecimal quantity;
     private String referenceDes;
 }
