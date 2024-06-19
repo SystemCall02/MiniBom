@@ -4,12 +4,10 @@ import com.huawei.innovation.rdm.coresdk.basic.dto.*;
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
-import com.huawei.innovation.rdm.san2.bean.enumerate.AssemblyMode;
-import com.huawei.innovation.rdm.san2.bean.enumerate.PartSource;
+import com.huawei.innovation.rdm.delegate.exception.RdmDelegateException;
 import com.huawei.innovation.rdm.san2.delegator.PartDelegator;
 import com.huawei.innovation.rdm.san2.dto.entity.*;
 import com.idme.minibom.Result.Result;
-import com.idme.minibom.pojo.DTO.PartModifyDTO;
 import com.idme.minibom.pojo.DTO.PartQueryDTO;
 import com.idme.minibom.pojo.DTO.PartVersionQueryDTO;
 import com.idme.minibom.pojo.VO.PartQueryVO;
@@ -40,48 +38,37 @@ public class PartController {
         return Result.success(partDelegator.delete(dto));
     }
 
-    @PostMapping("/checkout")
-    @ApiOperation("检出Part")
-    public Result checkout(@RequestBody VersionCheckOutDTO dto) {
-        return Result.success(partDelegator.checkout(dto));
-    }
-
-    @PostMapping("/undocheckout")
-    @ApiOperation(("撤销检出Part"))
-    public Result undocheckout(@RequestBody VersionUndoCheckOutDTO dto) {
-        return Result.success(partDelegator.undoCheckout(dto));
-    }
-
-    @PostMapping("checkin")
-    @ApiOperation("检入Part")
-    public Result checkin(@RequestBody VersionCheckInDTO dto) {
-        return Result.success(partDelegator.checkin(dto));
-    }
-
     @PostMapping("/update")
     @ApiOperation("更新Part")
-    public Result update(@RequestBody PartModifyDTO dto) {
-        PartUpdateDTO partUpdateDTO = new PartUpdateDTO();
-        partUpdateDTO.setId(dto.getId());
-        partUpdateDTO.setName(dto.getName());
-        partUpdateDTO.setCreator(dto.getCreator());
-        partUpdateDTO.setModifier(dto.getModifier());
-        partUpdateDTO.setDescription(dto.getDescription());
-        partUpdateDTO.setSource(PartSource.valueOf(dto.getSource()));
-        partUpdateDTO.setPartType(AssemblyMode.valueOf(dto.getPartType()));
-        partUpdateDTO.setKiaguid(dto.getKiaguid());
-        PartMasterUpdateDTO master = new PartMasterUpdateDTO();
-        master.setId(dto.getMaster().getId());
-        master.setName(dto.getMaster().getName());
-        master.setCreator(dto.getMaster().getCreator());
-        master.setModifier(dto.getMaster().getModifier());
-        partUpdateDTO.setMaster(master);
-        PartBranchUpdateDTO branch = new PartBranchUpdateDTO();
-        branch.setId(dto.getId());
-        branch.setCreator(dto.getBranch().getCreator());
-        branch.setModifier(dto.getBranch().getModifier());
-        partUpdateDTO.setBranch(branch);
-        return Result.success(partDelegator.update(partUpdateDTO));
+    public Result update(@RequestBody PartUpdateDTO dto) {
+        VersionCheckOutDTO versionCheckOutDTO = new VersionCheckOutDTO();
+        versionCheckOutDTO.setMasterId(dto.getMaster().getId());
+        PartViewDTO checkoutVO = partDelegator.checkout(versionCheckOutDTO);
+        Long checkoutId = checkoutVO.getId();
+        String name = checkoutVO.getMaster().getModifier();
+        dto.setId(checkoutId);
+
+        Result res;
+        try {
+            dto.setCreator(name);
+            dto.setModifier(name);
+            dto.getMaster().setCreator(name);
+            dto.getMaster().setModifier(name);
+            dto.getBranch().setCreator(name);
+            dto.getBranch().setModifier(name);
+            res = Result.success(partDelegator.update(dto));
+        } catch (RdmDelegateException e) {
+            VersionUndoCheckOutDTO versionUndoCheckOutDTO = new VersionUndoCheckOutDTO();
+            versionUndoCheckOutDTO.setMasterId(dto.getMaster().getId());
+            partDelegator.undoCheckout(versionUndoCheckOutDTO);
+            throw e;
+        }
+
+        VersionCheckInDTO checkInDTO = new VersionCheckInDTO();
+        checkInDTO.setMasterId(dto.getMaster().getId());
+        partDelegator.checkin(checkInDTO);
+
+        return res;
     }
 
     @PostMapping("/query")
