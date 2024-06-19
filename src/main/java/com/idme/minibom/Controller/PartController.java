@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Api(tags = "Part管理相关接口")
@@ -75,16 +76,36 @@ public class PartController {
     @ApiOperation("请求Part，如果id和name都为空，则返回所有Part")
     public Result query(@RequestBody PartQueryDTO dto) {
         QueryRequestVo queryRequestVo = new QueryRequestVo();
+        queryRequestVo.setIsNeedTotal(true);
+        boolean isNull = true;
         if (dto.id != null) {
             queryRequestVo.addCondition("id", ConditionType.EQUAL, dto.id);
+            isNull = false;
         }
         if (dto.name != null) {
             queryRequestVo.addCondition("name", ConditionType.LIKE, dto.name);
+            isNull = false;
         }
-        List<PartQueryViewDTO> resList = partDelegator.query(queryRequestVo, new RDMPageVO(dto.curPage, dto.pageSize));
+        List<PartQueryViewDTO> resList = partDelegator.query(queryRequestVo, new RDMPageVO(1, 10000));
+        if (isNull) {
+            List<PartQueryViewDTO> newList = new ArrayList<>();
+            int start = (dto.curPage - 1) * dto.pageSize;
+            int cur = 0;
+            for (PartQueryViewDTO partQueryViewDTO : resList) {
+                if (partQueryViewDTO.getLatest()) {
+                    if (cur >= start) {
+                        newList.add(partQueryViewDTO);
+                        if (newList.size() == dto.pageSize) break;
+                    }
+                    cur++;
+                }
+            }
+            resList = newList;
+        }
+
         PartQueryVO res = new PartQueryVO();
         res.setResList(resList);
-        res.setSize(partDelegator.count(queryRequestVo));
+        res.setSize((long) resList.size());
         return Result.success(res);
     }
 
@@ -105,14 +126,6 @@ public class PartController {
         versionMasterQueryDTO.setVersion(dto.getVersion());
         versionMasterQueryDTO.setIteration(dto.getIteration());
         return Result.success(partDelegator.getVersionByMaster(versionMasterQueryDTO));
-    }
-
-    @PostMapping("/latest/{id}")
-    @ApiOperation("获取Part最新分支的最新版本的信息")
-    public Result latest(@PathVariable Long id) {
-        PersistObjectIdDecryptDTO dto = new PersistObjectIdDecryptDTO();
-        dto.setId(id);
-        return Result.success(partDelegator.get(dto));
     }
 
     @PostMapping("/delbranch")
