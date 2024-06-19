@@ -88,10 +88,10 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
         return Result.success(viewDTO);
 }
 
-//获取子项
+//获取父项
     @PostMapping ("/queryTarget/{pageSize}/{curPage}")
     @CrossOrigin
-    @ApiOperation("获取子项")
+    @ApiOperation("获取父项")
     public Result queryTarget(@RequestBody GenericLinkTypeDTO genericLinkTypeDTO,@PathVariable int pageSize, @PathVariable int curPage) {
      //   bomLinkDelegator.queryTarget(genericLinkTypeDTO,rdmPageVO);
         RDMPageVO rdmPageVO=new RDMPageVO();
@@ -100,8 +100,8 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
         return Result.success(bomLinkDelegator.queryTarget(genericLinkTypeDTO,rdmPageVO));
     }
 //获取父项或子项
-    //传入Source：获取子项
-    //传入Target：获取父项
+    //传入Source：获取父项
+    //传入Target：获取子项
     @PostMapping("/queryRelatedPart/{pageSize}/{curPage}")
     @CrossOrigin
     @ApiOperation("获取相关项")

@@ -65,6 +65,8 @@ public class BOMController {
     }
 
     //展示所有子项
+    //可增加几个属性如ID属性等
+    //ToDo 修改输出
     @PostMapping("/show/{pageSize}/{curPage}")
     @CrossOrigin
     @ApiOperation("展示所有子项")
@@ -93,6 +95,7 @@ public class BOMController {
              BOM bom=new BOM();
              bom.setQuantity(bomLinkViewDTO.getQuantity());
              bom.setReferenceDes(bomUsesOccurrenceViewDTOS.get(0).getReferenceDesignator());
+             //获取编码
              bom.setTargetId(bomLinkViewDTO.getTarget().getId());
              bom.setTargetName(bomLinkViewDTO.getTarget().getName());
              //加入boms
@@ -108,6 +111,7 @@ public class BOMController {
     }
 
     //删除BOM子项
+    //删除所有BOMUseOccurrence引用并删除子项
     @DeleteMapping("/delete")
     @CrossOrigin
     @ApiOperation("删除所选子项")
@@ -125,5 +129,19 @@ public class BOMController {
         //persistObjectIdModifierDTO.getId();
         return Result.success(bomLinkDelegator.delete(persistObjectIdModifierDTO));
     }
+
+    //查看BOM
+    /*
+    * 从头获取bomlink,从bomlink获取子项id,再把所有子项重复这一动作
+    * */
+
+
+    public Result getChildren(@RequestParam Long id){
+
+        BOMLinkViewDTO bomLinkViewDTO=new BOMLinkViewDTO();
+        //bomLinkViewDTO.getSource().getMaster().
+        return Result.success();
+    }
+
 
 }
