@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 @Setter
 @Getter
+//BOM 创建入参
 public class BOMDTO {
     private Long sourceId;//partID
     private Long  targetId;//PartMasterID

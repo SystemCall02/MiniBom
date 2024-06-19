@@ -15,6 +15,7 @@ import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkViewDTO;
 import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.Class.BOM;
+import com.idme.minibom.pojo.Class.BOMTreeNode;
 import com.idme.minibom.pojo.DTO.BOMDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -65,7 +66,7 @@ public class BOMController {
     }
 
     //展示所有子项
-    //可增加几个属性如ID属性等
+    //可增加几个属性或分开
     //ToDo 修改输出，错误处理
     @PostMapping("/show/{pageSize}/{curPage}")
     @CrossOrigin
@@ -109,21 +110,20 @@ public class BOMController {
         return Result.success(boms);
     }
 
-    //删除BOM子项
+    //删除所选BOM子项
     //删除所有BOMUseOccurrence引用并删除子项
     @DeleteMapping("/delete")
     @CrossOrigin
     @ApiOperation("删除所选子项")
     public Result delete(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO){
 
-        //删除所有引用
         DeleteByConditionVo deleteByConditionVo=new DeleteByConditionVo();
         QueryRequestVo queryRequestVo=new QueryRequestVo();
 
         //查询name为bomLink.id
         queryRequestVo.addCondition("bomLink.id", ConditionType.EQUAL,persistObjectIdModifierDTO.getId());
         deleteByConditionVo.setCondition(queryRequestVo);
-        bomUsesOccurrenceDelegator.delete(persistObjectIdModifierDTO);
+        //删除所有引用
         bomUsesOccurrenceDelegator.deleteByCondition(deleteByConditionVo);
         //persistObjectIdModifierDTO.getId();
         return Result.success(bomLinkDelegator.delete(persistObjectIdModifierDTO));
@@ -135,11 +135,42 @@ public class BOMController {
     * */
 
 
-    public Result getChildren(@RequestParam Long id){
+    public BOMTreeNode addChildren( BOMTreeNode root){
+        GenericLinkQueryDTO genericLinkQueryDTO=new GenericLinkQueryDTO();
+        genericLinkQueryDTO.setObjectId(root.getPartMasterId());
+        genericLinkQueryDTO.setRole("target");
+        RDMPageVO rdmPageVO=new RDMPageVO();
+        rdmPageVO.setPageSize(20);
+        rdmPageVO.setCurPage(1);
+        //获取以其为父节点的BOMLink
+        if(genericLinkQueryDTO.getObjectId()!=null) {
+            List<BOMLinkViewDTO> bomLinkViewDTOList = bomLinkDelegator.queryRelationship(genericLinkQueryDTO, rdmPageVO);
+            if (bomLinkViewDTOList != null && !bomLinkViewDTOList.isEmpty()) {
+                for (BOMLinkViewDTO bomLinkViewDTO : bomLinkViewDTOList) {
+                    //获取子节点MasterID
+                    BOMTreeNode node = new BOMTreeNode(bomLinkViewDTO.getSource().getMaster().getId());
+                    root.addChild(addChildren(node));
+                   // root.addChild(node);
+                   // System.out.println("what can i say?");
 
-        BOMLinkViewDTO bomLinkViewDTO=new BOMLinkViewDTO();
-        //bomLinkViewDTO.getSource().getMaster().
-        return Result.success();
+                }
+            }
+        }
+
+       // bomLinkViewDTO.getSource().getMaster();
+       // BOMTreeNode node=new BOMTreeNode(partMasterId,)
+        return root;
+
+    }
+    //创建树
+    @PostMapping("/createTree")
+    @CrossOrigin
+    @ApiOperation("创建BOMTree")
+    public Result createTree(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO){
+        BOMTreeNode root=new BOMTreeNode(persistObjectIdModifierDTO.getId());
+        BOMTreeNode bomTree=addChildren(root);
+      //  System.out.println(root.getPartMasterId());
+        return Result.success(bomTree);
     }
 
 
