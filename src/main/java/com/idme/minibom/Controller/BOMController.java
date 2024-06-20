@@ -76,7 +76,7 @@ public class BOMController {
     //展示所有子项
     //可增加几个属性或分开
     //可将入参改为partId
-    //ToDo 修改输出，错误处理
+    //ToDo 错误处理
     @PostMapping("/show/{pageSize}/{curPage}")
     @CrossOrigin
     @ApiOperation("展示所有子项")
@@ -170,17 +170,16 @@ public class BOMController {
 
     }
     //创建树
-    //传入ID为partMasterID
+    //传入ID为partID
     @PostMapping("/createTree")
     @CrossOrigin
     @ApiOperation("创建BOMTree")
     public Result createTree(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO){
 
         BOMTreeNode root=new BOMTreeNode(persistObjectIdModifierDTO.getId(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getName(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getNumber());
-      //  BOMTreeNode bomTree=addChildren(root);
+        BOMTreeNode bomTree=addChildren(root);
       //  System.out.println(root.getPartMasterId());
-        //return Result.success(bomTree);
-        return Result.success(root);
+        return Result.success(bomTree);
     }
 
 
