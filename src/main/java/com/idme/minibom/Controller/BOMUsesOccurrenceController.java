@@ -47,7 +47,7 @@ public class BOMUsesOccurrenceController {
     @PutMapping("/update")
     @CrossOrigin
     @ApiOperation("修改BOMUsesOccurrence")
-    public Result updateBOMLink(@RequestBody BOMUsesOccurrenceUpdateDTO bomUsesOccurrenceUpdateDTO) {
+    public Result updateBOMUsesOccurrence(@RequestBody BOMUsesOccurrenceUpdateDTO bomUsesOccurrenceUpdateDTO) {
 
         BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO= bomUsesOccurrenceDelegator.update(bomUsesOccurrenceUpdateDTO);
         // 构建成功响应
