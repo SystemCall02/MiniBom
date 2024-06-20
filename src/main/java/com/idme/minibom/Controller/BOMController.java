@@ -1,16 +1,16 @@
 package com.idme.minibom.Controller;
 
-import com.huawei.innovation.rdm.coresdk.basic.dto.GenericLinkQueryDTO;
-import com.huawei.innovation.rdm.coresdk.basic.dto.ObjectReferenceParamDTO;
-import com.huawei.innovation.rdm.coresdk.basic.dto.PersistObjectIdModifierDTO;
+import com.huawei.innovation.rdm.coresdk.basic.dto.*;
 import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.DeleteByConditionVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.delegator.BOMUsesOccurrenceDelegator;
+import com.huawei.innovation.rdm.san2.delegator.PartDelegator;
 import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceViewDTO;
+import com.huawei.innovation.rdm.san2.dto.entity.PartViewDTO;
 import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkViewDTO;
 import com.idme.minibom.Result.Result;
@@ -34,7 +34,15 @@ public class BOMController {
     private BOMLinkDelegator bomLinkDelegator;
     @Autowired
     private BOMUsesOccurrenceDelegator bomUsesOccurrenceDelegator;
+    @Autowired
+    private PartDelegator partDelegator;
 
+    //根据ID获取part
+    public PartViewDTO getPart(Long Id){
+        PersistObjectIdDecryptDTO persistObjectIdDecryptDTO = new PersistObjectIdDecryptDTO();
+        persistObjectIdDecryptDTO.setId(Id);
+        return partDelegator.get(persistObjectIdDecryptDTO);
+    }
 
     //创建BOM子项
 
@@ -67,7 +75,8 @@ public class BOMController {
 
     //展示所有子项
     //可增加几个属性或分开
-    //ToDo 修改输出，错误处理
+    //可将入参改为partId
+    //ToDo 错误处理
     @PostMapping("/show/{pageSize}/{curPage}")
     @CrossOrigin
     @ApiOperation("展示所有子项")
@@ -131,10 +140,8 @@ public class BOMController {
 
     //查看BOM
     /*
-    * 从头获取bomlink,从bomlink获取子项id,再把所有子项重复这一动作
+    *逐一获取每个Part的子项
     * */
-
-
     public BOMTreeNode addChildren( BOMTreeNode root){
         GenericLinkQueryDTO genericLinkQueryDTO=new GenericLinkQueryDTO();
         genericLinkQueryDTO.setObjectId(root.getPartMasterId());
@@ -148,7 +155,7 @@ public class BOMController {
             if (bomLinkViewDTOList != null && !bomLinkViewDTOList.isEmpty()) {
                 for (BOMLinkViewDTO bomLinkViewDTO : bomLinkViewDTOList) {
                     //获取子节点MasterID
-                    BOMTreeNode node = new BOMTreeNode(bomLinkViewDTO.getSource().getMaster().getId());
+                    BOMTreeNode node = new BOMTreeNode(bomLinkViewDTO.getSource().getMaster().getId(),bomLinkViewDTO.getSource().getMaster().getName(),bomLinkViewDTO.getSource().getMaster().getNumber());
                     root.addChild(addChildren(node));
                    // root.addChild(node);
                    // System.out.println("what can i say?");
@@ -163,11 +170,13 @@ public class BOMController {
 
     }
     //创建树
+    //传入ID为partID
     @PostMapping("/createTree")
     @CrossOrigin
     @ApiOperation("创建BOMTree")
     public Result createTree(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO){
-        BOMTreeNode root=new BOMTreeNode(persistObjectIdModifierDTO.getId());
+
+        BOMTreeNode root=new BOMTreeNode(persistObjectIdModifierDTO.getId(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getName(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getNumber());
         BOMTreeNode bomTree=addChildren(root);
       //  System.out.println(root.getPartMasterId());
         return Result.success(bomTree);
