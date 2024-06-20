@@ -15,9 +15,10 @@ import java.util.List;
 * */
 public class BOMTreeNode {
     private Long partMasterId;
-    private List<BOMTreeNode> children;
     private String partMasterName="";
     private String partMasterNumber="";
+    private List<BOMTreeNode> children;
+
     public BOMTreeNode(Long partMasterId,String partMasterName,String partMasterNumber) {
         this.partMasterId = partMasterId;
         this.partMasterName =partMasterName;

@@ -177,9 +177,10 @@ public class BOMController {
     public Result createTree(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO){
 
         BOMTreeNode root=new BOMTreeNode(persistObjectIdModifierDTO.getId(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getName(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getNumber());
-        BOMTreeNode bomTree=addChildren(root);
+      //  BOMTreeNode bomTree=addChildren(root);
       //  System.out.println(root.getPartMasterId());
-        return Result.success(bomTree);
+        //return Result.success(bomTree);
+        return Result.success(root);
     }
 
 
