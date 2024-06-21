@@ -83,19 +83,26 @@ public class PartController {
             isNull = false;
         }
         if (dto.name != null) {
-            queryRequestVo.addCondition("name", ConditionType.LIKE, dto.name);
+            queryRequestVo.addCondition("name", ConditionType.EQUAL, dto.name);
             isNull = false;
         }
         List<PartQueryViewDTO> resList = partDelegator.query(queryRequestVo, new RDMPageVO(1, 10000));
+        long count = 0;
+
         if (isNull) {
             List<PartQueryViewDTO> newList = new ArrayList<>();
+            for (PartQueryViewDTO partQueryViewDTO : resList) {
+                if (partQueryViewDTO.getLatest()) {
+                    count++;
+                }
+            }
+
             int start = (dto.curPage - 1) * dto.pageSize;
             int cur = 0;
             for (PartQueryViewDTO partQueryViewDTO : resList) {
                 if (partQueryViewDTO.getLatest()) {
                     if (cur >= start) {
-                        newList.add(partQueryViewDTO);
-                        if (newList.size() == dto.pageSize) break;
+                        if (newList.size() < dto.pageSize) newList.add(partQueryViewDTO);
                     }
                     cur++;
                 }
@@ -105,7 +112,11 @@ public class PartController {
 
         PartQueryVO res = new PartQueryVO();
         res.setResList(resList);
-        res.setSize((long) resList.size());
+        if (isNull) {
+            res.setSize(count);
+        } else {
+            res.setSize((long) resList.size());
+        }
         return Result.success(res);
     }
 
