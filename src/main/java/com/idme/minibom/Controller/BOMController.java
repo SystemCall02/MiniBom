@@ -38,6 +38,7 @@ public class BOMController {
     private PartDelegator partDelegator;
 
     //根据ID获取part
+    //获取partMaster等相关信息
     public PartViewDTO getPart(Long Id){
         PersistObjectIdDecryptDTO persistObjectIdDecryptDTO = new PersistObjectIdDecryptDTO();
         persistObjectIdDecryptDTO.setId(Id);
@@ -48,7 +49,7 @@ public class BOMController {
 
     @PostMapping("/create")
     @CrossOrigin
-    @ApiOperation("创建BOM")
+    @ApiOperation("创建BOM子项")
     public Result createChildren(@RequestBody BOMDTO bomdto){
         BOMLinkCreateDTO bomLinkCreateDTO=new BOMLinkCreateDTO();
         BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO=new BOMUsesOccurrenceCreateDTO();
@@ -75,8 +76,7 @@ public class BOMController {
 
     //展示所有子项
     //可增加几个属性或分开
-    //可将入参改为partId
-    //ToDo 错误处理
+    //入参为partId
     @PostMapping("/show/{pageSize}/{curPage}")
     @CrossOrigin
     @ApiOperation("展示所有子项")
@@ -86,6 +86,8 @@ public class BOMController {
         rdmPageVO.setCurPage(curPage);
 
         //role设置为target，输出以其为父项的BOMLink
+        Long sourceId=genericLinkQueryDTO.getObjectId();
+        genericLinkQueryDTO.setObjectId(getPart(sourceId).getMaster().getId());
         genericLinkQueryDTO.setRole("target");
 
         //List children=bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
@@ -147,7 +149,7 @@ public class BOMController {
         genericLinkQueryDTO.setObjectId(root.getPartMasterId());
         genericLinkQueryDTO.setRole("target");
         RDMPageVO rdmPageVO=new RDMPageVO();
-        rdmPageVO.setPageSize(20);
+        rdmPageVO.setPageSize(100);
         rdmPageVO.setCurPage(1);
         //获取以其为父节点的BOMLink
         if(genericLinkQueryDTO.getObjectId()!=null) {
@@ -158,8 +160,6 @@ public class BOMController {
                     BOMTreeNode node = new BOMTreeNode(bomLinkViewDTO.getSource().getMaster().getId(),bomLinkViewDTO.getSource().getMaster().getName(),bomLinkViewDTO.getSource().getMaster().getNumber());
                     root.addChild(addChildren(node));
                    // root.addChild(node);
-                   // System.out.println("what can i say?");
-
                 }
             }
         }
