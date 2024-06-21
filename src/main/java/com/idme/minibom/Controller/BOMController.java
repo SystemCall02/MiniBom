@@ -46,7 +46,7 @@ public class BOMController {
     }
 
     //创建BOM子项
-
+    //传入ID均为partID
     @PostMapping("/create")
     @CrossOrigin
     @ApiOperation("创建BOM子项")
@@ -57,8 +57,10 @@ public class BOMController {
         ObjectReferenceParamDTO source=new ObjectReferenceParamDTO();
         ObjectReferenceParamDTO target=new ObjectReferenceParamDTO();
 
+        //传入参数
         source.setId(bomdto.getSourceId());
-        target.setId(bomdto.getTargetId());
+        //partId转为partMasterId
+        target.setId(getPart(bomdto.getTargetId()).getMaster().getId());
         bomLinkCreateDTO.setSource(source);
         bomLinkCreateDTO.setTarget(target);
         bomLinkCreateDTO.setQuantity(bomdto.getQuantity());
@@ -85,15 +87,15 @@ public class BOMController {
         rdmPageVO.setPageSize(pageSize);
         rdmPageVO.setCurPage(curPage);
 
-        //role设置为target，输出以其为父项的BOMLink
+        //将partId转为partMasterId
         Long sourceId=genericLinkQueryDTO.getObjectId();
         genericLinkQueryDTO.setObjectId(getPart(sourceId).getMaster().getId());
+        //role设置为target，输出以其为父项的BOMLink
         genericLinkQueryDTO.setRole("target");
 
         //List children=bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
 
         List<BOMLinkViewDTO> bomlinks=bomLinkDelegator.queryRelationship(genericLinkQueryDTO,rdmPageVO);
-        //System.out.println(bomlinks.get(0));
         List<BOM> boms= new ArrayList<>();
 
      for(BOMLinkViewDTO bomLinkViewDTO:bomlinks){
