@@ -1,11 +1,8 @@
 package com.idme.minibom.Config;
 
 
-import com.idme.minibom.Common.JacksonObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -14,8 +11,6 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-
-import java.util.List;
 
 @Configuration
 public class WebMVCConfiguration extends WebMvcConfigurationSupport {
@@ -50,16 +45,16 @@ public class WebMVCConfiguration extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
-    /**
-     * 扩展MVC框架消息转换器
-     * @param converters
-     */
-    @Override
-    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-
-        //创建消息转换器
-        MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
-        messageConverter.setObjectMapper(new JacksonObjectMapper());
-        converters.add(0,messageConverter);
-    }
+//    /**
+//     * 扩展MVC框架消息转换器
+//     * @param converters
+//     */
+//    @Override
+//    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+//
+//        //创建消息转换器
+//        MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
+//        messageConverter.setObjectMapper(new JacksonObjectMapper());
+//        converters.add(0,messageConverter);
+//    }
 }

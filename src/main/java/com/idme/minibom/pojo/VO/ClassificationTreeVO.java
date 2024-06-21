@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 public class ClassificationTreeVO {
 
-    //@JsonSerialize(using = ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
 
