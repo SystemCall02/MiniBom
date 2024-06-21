@@ -59,8 +59,8 @@ public class BOMController {
 
         //传入参数
         source.setId(bomdto.getSourceId());
-        //partId转为partMasterId
         if(getPart(bomdto.getTargetId())!=null) {
+            //partId转为partMasterId
             target.setId(getPart(bomdto.getTargetId()).getMaster().getId());
             bomLinkCreateDTO.setSource(source);
             bomLinkCreateDTO.setTarget(target);
@@ -76,7 +76,7 @@ public class BOMController {
             return Result.success(bomUsesOccurrenceViewDTO);
         }
         else {
-            return Result.success("target is null");
+            return Result.success("target is not exist");
         }
     }
 
@@ -93,42 +93,53 @@ public class BOMController {
 
         //将partId转为partMasterId
         Long sourceId=genericLinkQueryDTO.getObjectId();
-        genericLinkQueryDTO.setObjectId(getPart(sourceId).getMaster().getId());
-        //role设置为target，输出以其为父项的BOMLink
-        genericLinkQueryDTO.setRole("target");
+        if(getPart(sourceId)!=null) {
+            genericLinkQueryDTO.setObjectId(getPart(sourceId).getMaster().getId());
+            //role设置为target，输出以其为父项的BOMLink
+            genericLinkQueryDTO.setRole("target");
 
-        //List children=bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
+            //List children=bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO);
 
-        List<BOMLinkViewDTO> bomlinks=bomLinkDelegator.queryRelationship(genericLinkQueryDTO,rdmPageVO);
-        List<BOM> boms= new ArrayList<>();
+            List<BOMLinkViewDTO> bomlinks = bomLinkDelegator.queryRelationship(genericLinkQueryDTO, rdmPageVO);
+            List<BOM> boms = new ArrayList<>();
 
-     for(BOMLinkViewDTO bomLinkViewDTO:bomlinks){
-         //查询BOMLink对应BOMUseOccurrence
-         QueryRequestVo queryRequestVo=new QueryRequestVo();
-         queryRequestVo.addCondition("bomLink.id",ConditionType.EQUAL,bomLinkViewDTO.getId());
-         List<BOMUsesOccurrenceViewDTO> bomUsesOccurrenceViewDTOS=bomUsesOccurrenceDelegator.find(queryRequestVo,rdmPageVO);
-         //设置bom属性
-         if(bomUsesOccurrenceViewDTOS!=null&& !bomUsesOccurrenceViewDTOS.isEmpty()){
-             BOM bom=new BOM();
-             bom.setQuantity(bomLinkViewDTO.getQuantity());
-             bom.setReferenceDes(bomUsesOccurrenceViewDTOS.get(0).getReferenceDesignator());
-             //获取编码
-             bom.setSourceId(bomLinkViewDTO.getSource().getId());
-             bom.setSourceName(bomLinkViewDTO.getSource().getName());
-             //加入boms
-             boms.add(bom);
-         }
+            //错误处理：检测子项是否存在
+            if(bomlinks!=null&&!bomlinks.isEmpty()) {
+                for (BOMLinkViewDTO bomLinkViewDTO : bomlinks) {
+                    //查询BOMLink对应BOMUseOccurrence
+                    QueryRequestVo queryRequestVo = new QueryRequestVo();
+                    queryRequestVo.addCondition("bomLink.id", ConditionType.EQUAL, bomLinkViewDTO.getId());
+                    List<BOMUsesOccurrenceViewDTO> bomUsesOccurrenceViewDTOS = bomUsesOccurrenceDelegator.find(queryRequestVo, rdmPageVO);
+                    //设置bom属性
+                    if (bomUsesOccurrenceViewDTOS != null && !bomUsesOccurrenceViewDTOS.isEmpty()) {
+                        BOM bom = new BOM();
+                        bom.setQuantity(bomLinkViewDTO.getQuantity());
+                        bom.setReferenceDes(bomUsesOccurrenceViewDTOS.get(0).getReferenceDesignator());
+                        bom.setSourceId(bomLinkViewDTO.getSource().getId());
+                        bom.setSourceName(bomLinkViewDTO.getSource().getName());
+                        //加入boms
+                        boms.add(bom);
+                    }
 
 
-     }
-      //  System.out.println(boms.get(0));
-        //System.out.println(bomlinks.size());
+                }
+                //  System.out.println(boms.get(0));
+                //System.out.println(bomlinks.size());
+                return Result.success(boms);
+            }
+            else {
+                return Result.success("children is not exist");
+            }
 
-        return Result.success(boms);
+        }
+        else {
+            return Result.success("part is not exist");
+        }
     }
 
     //删除所选BOM子项
     //删除所有BOMUseOccurrence引用并删除子项
+    //传入ID为bomlinkId
     @DeleteMapping("/delete")
     @CrossOrigin
     @ApiOperation("删除所选子项")
@@ -162,7 +173,7 @@ public class BOMController {
             List<BOMLinkViewDTO> bomLinkViewDTOList = bomLinkDelegator.queryRelationship(genericLinkQueryDTO, rdmPageVO);
             if (bomLinkViewDTOList != null && !bomLinkViewDTOList.isEmpty()) {
                 for (BOMLinkViewDTO bomLinkViewDTO : bomLinkViewDTOList) {
-                    //获取子节点MasterID
+                    //获取子节点MasterID，name,Number
                     BOMTreeNode node = new BOMTreeNode(bomLinkViewDTO.getSource().getMaster().getId(),bomLinkViewDTO.getSource().getMaster().getName(),bomLinkViewDTO.getSource().getMaster().getNumber());
                     root.addChild(addChildren(node));
                    // root.addChild(node);
