@@ -60,20 +60,24 @@ public class BOMController {
         //传入参数
         source.setId(bomdto.getSourceId());
         //partId转为partMasterId
-        target.setId(getPart(bomdto.getTargetId()).getMaster().getId());
-        bomLinkCreateDTO.setSource(source);
-        bomLinkCreateDTO.setTarget(target);
-        bomLinkCreateDTO.setQuantity(bomdto.getQuantity());
-        BOMLinkViewDTO bomLinkViewDTO=bomLinkDelegator.create(bomLinkCreateDTO);
+        if(getPart(bomdto.getTargetId())!=null) {
+            target.setId(getPart(bomdto.getTargetId()).getMaster().getId());
+            bomLinkCreateDTO.setSource(source);
+            bomLinkCreateDTO.setTarget(target);
+            bomLinkCreateDTO.setQuantity(bomdto.getQuantity());
+            BOMLinkViewDTO bomLinkViewDTO = bomLinkDelegator.create(bomLinkCreateDTO);
 
-        bomLink.setId(bomLinkViewDTO.getId());
-        bomUsesOccurrenceCreateDTO.setBomLink(bomLink);
-        bomUsesOccurrenceCreateDTO.setReferenceDesignator(bomdto.getReferenceDes());
-        BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO=bomUsesOccurrenceDelegator.create(bomUsesOccurrenceCreateDTO);
-
-        //bomLinkViewDTO.setQuantity(bomdto.getQuantity());
-        //bomUsesOccurrenceViewDTO.setReferenceDesignator(bomdto.getReferenceDes());
-        return Result.success(bomUsesOccurrenceViewDTO);
+            bomLink.setId(bomLinkViewDTO.getId());
+            bomUsesOccurrenceCreateDTO.setBomLink(bomLink);
+            bomUsesOccurrenceCreateDTO.setReferenceDesignator(bomdto.getReferenceDes());
+            BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO = bomUsesOccurrenceDelegator.create(bomUsesOccurrenceCreateDTO);
+            //bomLinkViewDTO.setQuantity(bomdto.getQuantity());
+            //bomUsesOccurrenceViewDTO.setReferenceDesignator(bomdto.getReferenceDes());
+            return Result.success(bomUsesOccurrenceViewDTO);
+        }
+        else {
+            return Result.success("target is null");
+        }
     }
 
     //展示所有子项
