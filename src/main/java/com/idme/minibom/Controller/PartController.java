@@ -44,6 +44,7 @@ public class PartController {
     @ApiOperation("更新Part")
     public Result update(@RequestBody PartUpdateDTO dto) {
         VersionCheckOutDTO versionCheckOutDTO = new VersionCheckOutDTO();
+        //需要判读master是否为null
         versionCheckOutDTO.setMasterId(dto.getMaster().getId());
         PartViewDTO checkoutVO = partDelegator.checkout(versionCheckOutDTO);
         Long checkoutId = checkoutVO.getId();
@@ -160,4 +161,5 @@ public class PartController {
         versionReviseDTO.setMasterId(masterId);
         return Result.success(partDelegator.revise(versionReviseDTO));
     }
+
 }
