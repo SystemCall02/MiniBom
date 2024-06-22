@@ -14,6 +14,7 @@ import com.idme.minibom.pojo.VO.PartQueryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -82,8 +83,8 @@ public class PartController {
             queryRequestVo.addCondition("id", ConditionType.EQUAL, dto.id);
             isNull = false;
         }
-        if (dto.name != null) {
-            queryRequestVo.addCondition("name", ConditionType.EQUAL, dto.name);
+        if (dto.name != null && !dto.name.isEmpty()) {
+            queryRequestVo.addCondition("name", ConditionType.LIKE, dto.name);
             isNull = false;
         }
         List<PartQueryViewDTO> resList = partDelegator.query(queryRequestVo, new RDMPageVO(1, 10000));
@@ -115,6 +116,10 @@ public class PartController {
         if (isNull) {
             res.setSize(count);
         } else {
+            //列表数据判断 否则报空指针错误
+            if(resList==null){
+                res.setSize(count);
+            }
             res.setSize((long) resList.size());
         }
         return Result.success(res);
