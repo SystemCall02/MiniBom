@@ -39,7 +39,6 @@ public class BOMLinkController {
 //创建
     //json格式与postman调用url不同
     @PostMapping("/create")
-    @CrossOrigin
     @ApiOperation("创建BOMLink")
     @Operation(
             summary = "BOMLink"
@@ -55,7 +54,6 @@ public class BOMLinkController {
 
 //修改
     @PutMapping("/update")
-    @CrossOrigin
     @ApiOperation("修改BOMLink")
     public Result updateBOMLink(@RequestBody BOMLinkUpdateDTO bomLinkUpdateDTO) {
         // 使用代理接口调用修改BOMLink的方法
@@ -67,7 +65,6 @@ public class BOMLinkController {
 
 //删除
 @DeleteMapping("/delete")
-@CrossOrigin
 @ApiOperation("删除BOMLink")
 public Result deleteBOMLink(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO) {
     //PersistObjectIdModifierDTO persistObjectIdModifierDTO=new PersistObjectIdModifierDTO();
@@ -78,19 +75,18 @@ public Result deleteBOMLink(@RequestBody PersistObjectIdModifierDTO persistObjec
 }
 
 //根据ID查询
-@GetMapping("/getBOMLinks")
-@CrossOrigin
+@PostMapping("/getBOMLinks")
 @ApiOperation("根据ID查询")
-public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  PersistObjectIdDecryptDTO persistObjectIdDecryptDTO) {
+public Result getBOMLinks(@RequestBody PersistObjectIdDecryptDTO persistObjectIdDecryptDTO) {
      //   PersistObjectIdDecryptDTO persistObjectIdDecryptDTO=new PersistObjectIdDecryptDTO();
       //  persistObjectIdDecryptDTO.setId(id);
+
         BOMLinkViewDTO viewDTO=bomLinkDelegator.get(persistObjectIdDecryptDTO);
         return Result.success(viewDTO);
 }
 
 //获取父项
     @PostMapping ("/queryTarget/{pageSize}/{curPage}")
-    @CrossOrigin
     @ApiOperation("获取父项")
     public Result queryTarget(@RequestBody GenericLinkTypeDTO genericLinkTypeDTO,@PathVariable int pageSize, @PathVariable int curPage) {
      //   bomLinkDelegator.queryTarget(genericLinkTypeDTO,rdmPageVO);
@@ -103,7 +99,6 @@ public Result getBOMLinks(@org.springframework.web.bind.annotation.RequestBody  
     //传入Source：获取父项
     //传入Target：获取子项
     @PostMapping("/queryRelatedPart/{pageSize}/{curPage}")
-    @CrossOrigin
     @ApiOperation("获取相关项")
     public Result queryRelatedPart(@RequestBody GenericLinkQueryDTO genericLinkQueryDTO,@PathVariable int pageSize, @PathVariable int curPage){
        RDMPageVO rdmPageVO=new RDMPageVO();

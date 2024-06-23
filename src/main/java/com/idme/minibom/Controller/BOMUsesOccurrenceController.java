@@ -56,6 +56,8 @@ public class BOMUsesOccurrenceController {
 
     //根据ID获取BOMUsesOccurrence
     @GetMapping("/get")
+    @CrossOrigin
+    @ApiOperation("获取BOMUsesOccurrence")
     public Result getBOMUsesOccurrence(@org.springframework.web.bind.annotation.RequestBody PersistObjectIdDecryptDTO persistObjectIdDecryptDTO) {
 
         BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO=bomUsesOccurrenceDelegator.get(persistObjectIdDecryptDTO);
