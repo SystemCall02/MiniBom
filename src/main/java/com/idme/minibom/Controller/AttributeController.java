@@ -180,5 +180,21 @@ public class AttributeController {
 
     }
 
+    @GetMapping("/reference/{id}")
+    public Result getAttrReferenced(@PathVariable Long id){
+        String url = APIConstant.ENDPOINT+"//EXADefinition/queryExadefinitionNodeRefered/50/1";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(XdmDelegateConsts.X_AUTH_TOKEN,tokenService.getToken());
+        HashMap<String,Long> params = new HashMap<>();
+        params.put("id",id);
+        HttpEntity<HashMap<String,Long>> request = new HttpEntity<>(params,headers);
+
+        RDMResultVO body = restTemplate.postForEntity(url, request, RDMResultVO.class).getBody();
+
+        return Result.success(body.getData());
+
+    }
+
 
 }
