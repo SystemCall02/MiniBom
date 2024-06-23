@@ -14,7 +14,6 @@ import com.idme.minibom.pojo.VO.PartQueryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -89,16 +88,16 @@ public class PartController {
             isNull = false;
         }
         List<PartQueryViewDTO> resList = partDelegator.query(queryRequestVo, new RDMPageVO(1, 10000));
-        long count = 0;
+        PartQueryVO res = new PartQueryVO();
+        res.setResList(resList);
+        res.setSize((long) resList.size());
+        long count;
 
+        // 如果是默认查询，只返回最新版本
         if (isNull) {
+            count = latestCount(resList); // 最新版本的数量
             List<PartQueryViewDTO> newList = new ArrayList<>();
-            for (PartQueryViewDTO partQueryViewDTO : resList) {
-                if (partQueryViewDTO.getLatest()) {
-                    count++;
-                }
-            }
-
+            // 如果是第二页，每页显示10条记录，那么就会从第十一条记录开始加入到newList中
             int start = (dto.curPage - 1) * dto.pageSize;
             int cur = 0;
             for (PartQueryViewDTO partQueryViewDTO : resList) {
@@ -109,21 +108,21 @@ public class PartController {
                     cur++;
                 }
             }
-            resList = newList;
+            res.setResList(newList);
+            res.setSize(count);
         }
 
-        PartQueryVO res = new PartQueryVO();
-        res.setResList(resList);
-        if (isNull) {
-            res.setSize(count);
-        } else {
-            //列表数据判断 否则报空指针错误
-            if(resList==null){
-                res.setSize(count);
-            }
-            res.setSize((long) resList.size());
-        }
         return Result.success(res);
+    }
+
+    private long latestCount(List<PartQueryViewDTO> list) {
+        long count = 0;
+        for (PartQueryViewDTO partQueryViewDTO : list) {
+            if (partQueryViewDTO.getLatest()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @PostMapping("/allversions")
