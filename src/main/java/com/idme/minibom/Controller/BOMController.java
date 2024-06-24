@@ -48,7 +48,6 @@ public class BOMController {
     //创建BOM子项
     //传入ID均为partID
     @PostMapping("/create")
-    @CrossOrigin
     @ApiOperation("创建BOM子项")
     public Result createChildren(@RequestBody BOMDTO bomdto){
         BOMLinkCreateDTO bomLinkCreateDTO=new BOMLinkCreateDTO();
@@ -84,7 +83,6 @@ public class BOMController {
     //可增加几个属性或分开
     //入参为partId
     @PostMapping("/show/{pageSize}/{curPage}")
-    @CrossOrigin
     @ApiOperation("展示所有子项")
     public Result showAllChildren(@RequestBody GenericLinkQueryDTO genericLinkQueryDTO, @PathVariable int pageSize, @PathVariable int curPage){
         RDMPageVO rdmPageVO=new RDMPageVO();
@@ -141,7 +139,6 @@ public class BOMController {
     //删除所有BOMUseOccurrence引用并删除子项
     //传入ID为bomlinkId
     @DeleteMapping("/delete")
-    @CrossOrigin
     @ApiOperation("删除所选子项")
     public Result delete(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO){
 
@@ -189,7 +186,6 @@ public class BOMController {
     //创建树
     //传入ID为partID
     @PostMapping("/createTree")
-    @CrossOrigin
     @ApiOperation("创建BOMTree")
     public Result createTree(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO){
 

@@ -24,7 +24,6 @@ public class BOMUsesOccurrenceController {
 
     //创建
     @PostMapping("/create")
-    @CrossOrigin
     @ApiOperation("创建BOMUsesOccurrence")
     public Result createBOMUsesOccurrence(@org.springframework.web.bind.annotation.RequestBody BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO) {
      //   System.out.println(bomUsesOccurrenceCreateDTO.getBomLink().getId());
@@ -35,7 +34,6 @@ public class BOMUsesOccurrenceController {
 
     //删除
     @DeleteMapping("/delete")
-    @CrossOrigin
     @ApiOperation("删除BOMUsesOccurrence")
     public Result deleteBOMUserOccurrence(@org.springframework.web.bind.annotation.RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO) {
       //  PersistObjectIdModifierDTO persistObjectIdModifierDTO=new PersistObjectIdModifierDTO();
@@ -45,7 +43,6 @@ public class BOMUsesOccurrenceController {
 
     //修改
     @PutMapping("/update")
-    @CrossOrigin
     @ApiOperation("修改BOMUsesOccurrence")
     public Result updateBOMUsesOccurrence(@RequestBody BOMUsesOccurrenceUpdateDTO bomUsesOccurrenceUpdateDTO) {
 
@@ -55,10 +52,9 @@ public class BOMUsesOccurrenceController {
     }
 
     //根据ID获取BOMUsesOccurrence
-    @GetMapping("/get")
-    @CrossOrigin
+    @PostMapping("/get")
     @ApiOperation("获取BOMUsesOccurrence")
-    public Result getBOMUsesOccurrence(@org.springframework.web.bind.annotation.RequestBody PersistObjectIdDecryptDTO persistObjectIdDecryptDTO) {
+    public Result getBOMUsesOccurrence(@RequestBody PersistObjectIdDecryptDTO persistObjectIdDecryptDTO) {
 
         BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO=bomUsesOccurrenceDelegator.get(persistObjectIdDecryptDTO);
         return Result.success(bomUsesOccurrenceViewDTO);
