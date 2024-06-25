@@ -161,4 +161,12 @@ public class PartController {
         return Result.success(partDelegator.revise(versionReviseDTO));
     }
 
+
+    @GetMapping("/{id}")
+    @ApiOperation("根据id获取part具体信息")
+    public Result getById(@PathVariable Long id){
+        PersistObjectIdDecryptDTO persistObjectIdDecryptDTO = new PersistObjectIdDecryptDTO();
+        persistObjectIdDecryptDTO.setId(id);
+        return Result.success(partDelegator.get(persistObjectIdDecryptDTO));
+    }
 }
