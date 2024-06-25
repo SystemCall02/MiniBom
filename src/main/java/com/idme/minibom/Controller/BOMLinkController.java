@@ -1,20 +1,17 @@
 package com.idme.minibom.Controller;
 
 import com.huawei.innovation.rdm.coresdk.basic.dto.*;
+import com.huawei.innovation.rdm.coresdk.basic.enums.ConditionType;
 import com.huawei.innovation.rdm.coresdk.basic.vo.QueryRequestVo;
 import com.huawei.innovation.rdm.coresdk.basic.vo.RDMPageVO;
-import com.huawei.innovation.rdm.delegate.service.XdmTokenService;
 import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
-import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceCreateDTO;
 import com.huawei.innovation.rdm.san2.dto.relation.*;
 import com.idme.minibom.Result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -108,6 +105,15 @@ public Result getBOMLinks(@RequestBody PersistObjectIdDecryptDTO persistObjectId
        return Result.success(bomLinkDelegator.queryRelatedObjects(genericLinkQueryDTO,rdmPageVO));
     }
 
+
+    @GetMapping("/{id}")
+    @ApiOperation("传入partId获取子项信息")
+    public Result queryChildrenInBomLink(@PathVariable Long id){
+        QueryRequestVo queryRequestVo = new QueryRequestVo();
+        queryRequestVo.addCondition("source.id", ConditionType.EQUAL,id);
+        List<BOMLinkViewDTO> query = bomLinkDelegator.find(queryRequestVo,new RDMPageVO(1,50));
+        return Result.success(query);
+    }
 
 
 }
