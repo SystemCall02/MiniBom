@@ -83,7 +83,7 @@ public class BOMController {
             return Result.success(bomUsesOccurrenceViewDTO);
         }
         else {
-            return Result.success("target is not exist");
+            return Result.error("target is not exist");
         }
     }
 
@@ -131,7 +131,7 @@ public class BOMController {
 
             return Result.success(bomUsesOccurrenceViewDTOList);
         }else {
-            return Result.success("target is not exist");
+            return Result.error("target is not exist");
         }
     }
 
@@ -187,12 +187,14 @@ public class BOMController {
                 return Result.success(boms);
             }
             else {
-                return Result.success("children is not exist");
+                //return Result.success("children is not exist");
+                return Result.error("children is not exist");
             }
 
         }
         else {
-            return Result.success("part is not exist");
+            //return Result.success("part is not exist");
+            return Result.error("part is not exist");
         }
     }
 
