@@ -95,42 +95,40 @@ public class BOMController {
 //列表
         List<BOMLinkCreateDTO> bomLinkCreateDTOList=new ArrayList<>();
         List<BOMUsesOccurrenceCreateDTO> bomUsesOccurrenceCreateDTOList=new ArrayList<>();
-        //批量创建
-        //批量传入参数
-        for(BOMDTO bomdto : bomdtoList) {
-            source.setId(bomdto.getSourceId());
-            //if (getPart(bomdto.getTargetId()) != null) {
-            //partId转为partMasterId
-            target.setId(getPart(bomdto.getTargetId()).getMaster().getId());
-            bomLinkCreateDTO.setSource(source);
-            bomLinkCreateDTO.setTarget(target);
-            bomLinkCreateDTO.setQuantity(bomdto.getQuantity());
-            //加入链表
-            bomLinkCreateDTOList.add(bomLinkCreateDTO);
 
+        if(bomdtoList!=null&&!bomdtoList.isEmpty()) {
+            //批量传入参数
+            for (BOMDTO bomdto : bomdtoList) {
+                source.setId(bomdto.getSourceId());
+                //partId转为partMasterId
+                target.setId(getPart(bomdto.getTargetId()).getMaster().getId());
+                bomLinkCreateDTO.setSource(source);
+                bomLinkCreateDTO.setTarget(target);
+                bomLinkCreateDTO.setQuantity(bomdto.getQuantity());
+                //加入链表
+                bomLinkCreateDTOList.add(bomLinkCreateDTO);
+
+            }
+            //批量创建bomLink
+            List<BOMLinkViewDTO> bomLinkViewDTOList = bomLinkDelegator.batchCreate(bomLinkCreateDTOList);
+
+            // BOMLinkViewDTO bomLinkViewDTO = bomLinkDelegator.create(bomLinkCreateDTO);
+            for (BOMLinkViewDTO bomLinkViewDTO : bomLinkViewDTOList) {
+                bomLink.setId(bomLinkViewDTO.getId());
+                bomUsesOccurrenceCreateDTO.setBomLink(bomLink);
+                bomUsesOccurrenceCreateDTO.setReferenceDesignator(bomdtoList.get(0).getReferenceDes());
+                //加入链表
+                bomUsesOccurrenceCreateDTOList.add(bomUsesOccurrenceCreateDTO);
+            }
+            //批量创建bomUseOccurrence
+            //BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO = bomUsesOccurrenceDelegator.create(bomUsesOccurrenceCreateDTO);
+            List<BOMUsesOccurrenceViewDTO> bomUsesOccurrenceViewDTOList = bomUsesOccurrenceDelegator.batchCreate(bomUsesOccurrenceCreateDTOList);
+
+
+            return Result.success(bomUsesOccurrenceViewDTOList);
+        }else {
+            return Result.success("target is not exist");
         }
-
-                //批量创建bomLink
-            List<BOMLinkViewDTO> bomLinkViewDTOList=bomLinkDelegator.batchCreate(bomLinkCreateDTOList);
-
-               // BOMLinkViewDTO bomLinkViewDTO = bomLinkDelegator.create(bomLinkCreateDTO);
-        for (BOMLinkViewDTO bomLinkViewDTO : bomLinkViewDTOList) {
-            bomLink.setId(bomLinkViewDTO.getId());
-            bomUsesOccurrenceCreateDTO.setBomLink(bomLink);
-            bomUsesOccurrenceCreateDTO.setReferenceDesignator(bomdtoList.get(0).getReferenceDes());
-            //加入链表
-            bomUsesOccurrenceCreateDTOList.add(bomUsesOccurrenceCreateDTO);
-        }
-                //批量创建bomUseOccurrence
-                //BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO = bomUsesOccurrenceDelegator.create(bomUsesOccurrenceCreateDTO);
-             List<BOMUsesOccurrenceViewDTO> bomUsesOccurrenceViewDTOList=bomUsesOccurrenceDelegator.batchCreate(bomUsesOccurrenceCreateDTOList);
-
-
-                return Result.success(bomUsesOccurrenceViewDTOList);
-            //} else {
-            //    return Result.success("target is not exist");
-            //}
-
     }
 
 
