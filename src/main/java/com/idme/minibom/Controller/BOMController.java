@@ -30,7 +30,7 @@ import java.util.List;
 @Api(tags = "BOM管理相关接口")
 @RequestMapping("/api/BOM")
 @RestController
-@CrossOrigin
+@CrossOrigin(allowCredentials ="true")
 public class BOMController {
     @Autowired
     private BOMLinkDelegator bomLinkDelegator;
@@ -46,6 +46,8 @@ public class BOMController {
         persistObjectIdDecryptDTO.setId(Id);
         return partDelegator.get(persistObjectIdDecryptDTO);
     }
+
+
 
     //创建BOM子项
     //传入ID均为partID
@@ -130,6 +132,7 @@ public class BOMController {
             return Result.success("target is not exist");
         }
     }
+
 
 
 
