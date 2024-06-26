@@ -30,7 +30,7 @@ import java.util.List;
 @Api(tags = "BOM管理相关接口")
 @RequestMapping("/api/BOM")
 @RestController
-@CrossOrigin(allowCredentials ="true")
+@CrossOrigin
 public class BOMController {
     @Autowired
     private BOMLinkDelegator bomLinkDelegator;
@@ -132,7 +132,6 @@ public class BOMController {
             return Result.success("target is not exist");
         }
     }
-
 
 
 
