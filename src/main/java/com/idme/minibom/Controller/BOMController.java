@@ -9,9 +9,11 @@ import com.huawei.innovation.rdm.san2.delegator.BOMLinkDelegator;
 import com.huawei.innovation.rdm.san2.delegator.BOMUsesOccurrenceDelegator;
 import com.huawei.innovation.rdm.san2.delegator.PartDelegator;
 import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceCreateDTO;
+import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceUpdateDTO;
 import com.huawei.innovation.rdm.san2.dto.entity.BOMUsesOccurrenceViewDTO;
 import com.huawei.innovation.rdm.san2.dto.entity.PartViewDTO;
 import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkCreateDTO;
+import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkUpdateDTO;
 import com.huawei.innovation.rdm.san2.dto.relation.BOMLinkViewDTO;
 import com.idme.minibom.Result.Result;
 import com.idme.minibom.pojo.Class.BOM;
@@ -64,11 +66,13 @@ public class BOMController {
             bomLinkCreateDTO.setSource(source);
             bomLinkCreateDTO.setTarget(target);
             bomLinkCreateDTO.setQuantity(bomdto.getQuantity());
+            //创建bomLink
             BOMLinkViewDTO bomLinkViewDTO = bomLinkDelegator.create(bomLinkCreateDTO);
 
             bomLink.setId(bomLinkViewDTO.getId());
             bomUsesOccurrenceCreateDTO.setBomLink(bomLink);
             bomUsesOccurrenceCreateDTO.setReferenceDesignator(bomdto.getReferenceDes());
+            //创建bomUseOccurrence
             BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO = bomUsesOccurrenceDelegator.create(bomUsesOccurrenceCreateDTO);
             //bomLinkViewDTO.setQuantity(bomdto.getQuantity());
             //bomUsesOccurrenceViewDTO.setReferenceDesignator(bomdto.getReferenceDes());
@@ -78,6 +82,59 @@ public class BOMController {
             return Result.success("target is not exist");
         }
     }
+
+    //批量创建子项
+    @PostMapping("/batchCreate")
+    @ApiOperation("批量创建BOM子项")
+    public Result batchCreateChildren(@RequestBody List<BOMDTO> bomdtoList){
+        BOMLinkCreateDTO bomLinkCreateDTO=new BOMLinkCreateDTO();
+        BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO=new BOMUsesOccurrenceCreateDTO();
+        ObjectReferenceParamDTO bomLink=new ObjectReferenceParamDTO();
+        ObjectReferenceParamDTO source=new ObjectReferenceParamDTO();
+        ObjectReferenceParamDTO target=new ObjectReferenceParamDTO();
+//列表
+        List<BOMLinkCreateDTO> bomLinkCreateDTOList=new ArrayList<>();
+        List<BOMUsesOccurrenceCreateDTO> bomUsesOccurrenceCreateDTOList=new ArrayList<>();
+        //批量创建
+        //批量传入参数
+        for(BOMDTO bomdto : bomdtoList) {
+            source.setId(bomdto.getSourceId());
+            //if (getPart(bomdto.getTargetId()) != null) {
+            //partId转为partMasterId
+            target.setId(getPart(bomdto.getTargetId()).getMaster().getId());
+            bomLinkCreateDTO.setSource(source);
+            bomLinkCreateDTO.setTarget(target);
+            bomLinkCreateDTO.setQuantity(bomdto.getQuantity());
+            //加入链表
+            bomLinkCreateDTOList.add(bomLinkCreateDTO);
+
+        }
+
+                //批量创建bomLink
+            List<BOMLinkViewDTO> bomLinkViewDTOList=bomLinkDelegator.batchCreate(bomLinkCreateDTOList);
+
+               // BOMLinkViewDTO bomLinkViewDTO = bomLinkDelegator.create(bomLinkCreateDTO);
+        for (BOMLinkViewDTO bomLinkViewDTO : bomLinkViewDTOList) {
+            bomLink.setId(bomLinkViewDTO.getId());
+            bomUsesOccurrenceCreateDTO.setBomLink(bomLink);
+            bomUsesOccurrenceCreateDTO.setReferenceDesignator(bomdtoList.get(0).getReferenceDes());
+            //加入链表
+            bomUsesOccurrenceCreateDTOList.add(bomUsesOccurrenceCreateDTO);
+        }
+                //批量创建bomUseOccurrence
+                //BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO = bomUsesOccurrenceDelegator.create(bomUsesOccurrenceCreateDTO);
+             List<BOMUsesOccurrenceViewDTO> bomUsesOccurrenceViewDTOList=bomUsesOccurrenceDelegator.batchCreate(bomUsesOccurrenceCreateDTOList);
+
+
+                return Result.success(bomUsesOccurrenceViewDTOList);
+            //} else {
+            //    return Result.success("target is not exist");
+            //}
+
+    }
+
+
+
 
     //展示所有子项
     //可增加几个属性或分开
@@ -152,6 +209,27 @@ public class BOMController {
         bomUsesOccurrenceDelegator.deleteByCondition(deleteByConditionVo);
         //persistObjectIdModifierDTO.getId();
         return Result.success(bomLinkDelegator.delete(persistObjectIdModifierDTO));
+    }
+
+    //修改数量
+    @PutMapping("/updateQuantity")
+    @ApiOperation("修改BOMLink")
+    public Result updateBOMLink(@RequestBody BOMLinkUpdateDTO bomLinkUpdateDTO) {
+        // 使用代理接口调用修改BOMLink的方法
+
+        BOMLinkViewDTO bomLinkViewDTO=bomLinkDelegator.update(bomLinkUpdateDTO);
+        // 构建成功响应
+        return Result.success(bomLinkViewDTO);
+    }
+
+    //修改位号
+    @PutMapping("/updateDes")
+    @ApiOperation("修改BOMUsesOccurrence")
+    public Result updateBOMUsesOccurrence(@RequestBody BOMUsesOccurrenceUpdateDTO bomUsesOccurrenceUpdateDTO) {
+
+        BOMUsesOccurrenceViewDTO bomUsesOccurrenceViewDTO= bomUsesOccurrenceDelegator.update(bomUsesOccurrenceUpdateDTO);
+        // 构建成功响应
+        return Result.success(bomUsesOccurrenceViewDTO);
     }
 
     //查看BOM

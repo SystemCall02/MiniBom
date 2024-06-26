@@ -41,7 +41,7 @@ public class BOMUsesOccurrenceController {
         return Result.success(bomUsesOccurrenceDelegator.delete(persistObjectIdModifierDTO));
     }
 
-    //修改
+    //修改位号
     @PutMapping("/update")
     @ApiOperation("修改BOMUsesOccurrence")
     public Result updateBOMUsesOccurrence(@RequestBody BOMUsesOccurrenceUpdateDTO bomUsesOccurrenceUpdateDTO) {

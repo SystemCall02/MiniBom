@@ -49,7 +49,7 @@ public class BOMLinkController {
     }
 
 
-//修改
+//修改数量
     @PutMapping("/update")
     @ApiOperation("修改BOMLink")
     public Result updateBOMLink(@RequestBody BOMLinkUpdateDTO bomLinkUpdateDTO) {
