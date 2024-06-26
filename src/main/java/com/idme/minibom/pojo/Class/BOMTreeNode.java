@@ -1,5 +1,7 @@
 package com.idme.minibom.pojo.Class;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +16,9 @@ import java.util.List;
 * 或直接根据其中的ID来get其他参数
 * */
 public class BOMTreeNode {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long partMasterId;
+
     private String partMasterName="";
     private String partMasterNumber="";
     private List<BOMTreeNode> children;
