@@ -60,6 +60,8 @@ public class BOMController {
         ObjectReferenceParamDTO source=new ObjectReferenceParamDTO();
         ObjectReferenceParamDTO target=new ObjectReferenceParamDTO();
 
+        //分类判断
+        //System.out.println(getPart(bomdto.getTargetId()).getExtAttrs().get(0).getValue());
         //传入参数
         source.setId(bomdto.getSourceId());
         if(getPart(bomdto.getTargetId())!=null) {
@@ -172,6 +174,8 @@ public class BOMController {
                         bom.setReferenceDes(bomUsesOccurrenceViewDTOS.get(0).getReferenceDesignator());
                         bom.setSourceId(bomLinkViewDTO.getSource().getId());
                         bom.setSourceName(bomLinkViewDTO.getSource().getName());
+                        bom.setBomLinkId(bomLinkViewDTO.getId());
+                        bom.setBomUseOccurrenceId(bomUsesOccurrenceViewDTOS.get(0).getId());
                         //加入boms
                         boms.add(bom);
                     }

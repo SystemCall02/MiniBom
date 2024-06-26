@@ -12,4 +12,6 @@ public class BOM {
     private String sourceName;
     private BigDecimal quantity;
     private String referenceDes;
+    private Long bomLinkId;
+    private Long bomUseOccurrenceId;
 }
