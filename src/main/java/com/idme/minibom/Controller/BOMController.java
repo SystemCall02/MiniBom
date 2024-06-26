@@ -86,7 +86,6 @@ public class BOMController {
     //批量创建子项
     @PostMapping("/batchCreate")
     @ApiOperation("批量创建BOM子项")
-    @CrossOrigin
     public Result batchCreateChildren(@RequestBody List<BOMDTO> bomdtoList){
         BOMLinkCreateDTO bomLinkCreateDTO=new BOMLinkCreateDTO();
         BOMUsesOccurrenceCreateDTO bomUsesOccurrenceCreateDTO=new BOMUsesOccurrenceCreateDTO();
