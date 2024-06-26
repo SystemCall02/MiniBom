@@ -66,9 +66,11 @@ public class LoginController {
            throw new PasswordErrorException(ExceptionConstant.PASSWORD_ERROR);
         }
 
-        responseResult.setName(loginDTO.getName());
-        responseResult.setId(queryResult.getId());
-
+//        responseResult.setName(loginDTO.getName());
+//        responseResult.setId(queryResult.getId());
+        //为了获取用户更多信息 只把隐私信息设空
+        responseResult = queryResult;
+        responseResult.setPassword("");
         return Result.success(LoginConstant.LOGIN_SUCCESS,responseResult);
     }
 
