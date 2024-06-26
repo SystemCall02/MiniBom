@@ -246,6 +246,7 @@ public class BOMController {
             List<BOMLinkViewDTO> bomLinkViewDTOList = bomLinkDelegator.queryRelationship(genericLinkQueryDTO, rdmPageVO);
             if (bomLinkViewDTOList != null && !bomLinkViewDTOList.isEmpty()) {
                 for (BOMLinkViewDTO bomLinkViewDTO : bomLinkViewDTOList) {
+
                     //获取子节点MasterID，name,Number
                     BOMTreeNode node = new BOMTreeNode(bomLinkViewDTO.getSource().getMaster().getId(),bomLinkViewDTO.getSource().getMaster().getName(),bomLinkViewDTO.getSource().getMaster().getNumber());
                     root.addChild(addChildren(node));

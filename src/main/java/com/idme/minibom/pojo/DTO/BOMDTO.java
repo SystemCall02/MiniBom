@@ -14,8 +14,9 @@ public class BOMDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sourceId;//partID
 
-
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long  targetId;//PartMasterID
+
     private BigDecimal quantity;
     private String referenceDes;
 }
