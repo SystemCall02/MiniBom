@@ -46,6 +46,18 @@ public class BOMController {
         persistObjectIdDecryptDTO.setId(Id);
         return partDelegator.get(persistObjectIdDecryptDTO);
     }
+    //根据PartMasterId获取Part
+    public PartViewDTO getPartByMasterId(Long partMasterId){
+        QueryRequestVo queryRequestVo = new QueryRequestVo();
+        RDMPageVO rdmPageVO = new RDMPageVO();
+
+        rdmPageVO.setPageSize(50);
+        rdmPageVO.setCurPage(1);
+        queryRequestVo.addCondition("master.id", ConditionType.EQUAL,partMasterId );
+        List<PartViewDTO> partViewDTOList=partDelegator.find(queryRequestVo,rdmPageVO);
+        //partDelegator.query(queryRequestVo, rdmPageVO);
+        return partViewDTOList.get(0);
+    }
 
 
 
@@ -268,13 +280,36 @@ public class BOMController {
         return root;
 
     }
+    //获取根节点
+    //传入partId
+    public Long getRootId(Long id){
+        GenericLinkQueryDTO genericLinkQueryDTO=new GenericLinkQueryDTO();
+        RDMPageVO rdmPageVO=new RDMPageVO();
+
+        rdmPageVO.setPageSize(100);
+        rdmPageVO.setCurPage(1);
+        genericLinkQueryDTO.setObjectId(id);
+        genericLinkQueryDTO.setRole("source");
+
+        List<BOMLinkViewDTO> bomLinkViewDTOList=bomLinkDelegator.queryRelationship(genericLinkQueryDTO,rdmPageVO);
+        if (bomLinkViewDTOList != null && !bomLinkViewDTOList.isEmpty()) {//如果存在父项
+            //获取父项partID
+            Long parentId = getPartByMasterId(bomLinkViewDTOList.get(0).getTarget().getId()).getId();
+            return getRootId(parentId);
+        }
+        else {//不存在父项，直接返回id
+            return id;
+        }
+    }
     //创建树
     //传入ID为partID
     @PostMapping("/createTree")
     @ApiOperation("创建BOMTree")
     public Result createTree(@RequestBody PersistObjectIdModifierDTO persistObjectIdModifierDTO){
+        Long rootId=getRootId(persistObjectIdModifierDTO.getId());
 
-        BOMTreeNode root=new BOMTreeNode(persistObjectIdModifierDTO.getId(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getName(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getNumber());
+        //BOMTreeNode root=new BOMTreeNode(persistObjectIdModifierDTO.getId(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getName(),getPart(persistObjectIdModifierDTO.getId()).getMaster().getNumber());
+        BOMTreeNode root=new BOMTreeNode(rootId,getPart(rootId).getMaster().getName(),getPart(rootId).getMaster().getNumber());
         BOMTreeNode bomTree=addChildren(root);
       //  System.out.println(root.getPartMasterId());
         return Result.success(bomTree);
