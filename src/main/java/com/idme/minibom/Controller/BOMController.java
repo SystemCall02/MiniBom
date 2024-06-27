@@ -280,7 +280,7 @@ public class BOMController {
         return root;
 
     }
-    //获取根节点
+    //获取根节点Id
     //传入partId
     public Long getRootId(Long id){
         GenericLinkQueryDTO genericLinkQueryDTO=new GenericLinkQueryDTO();
@@ -295,7 +295,7 @@ public class BOMController {
         if (bomLinkViewDTOList != null && !bomLinkViewDTOList.isEmpty()) {//如果存在父项
             //获取父项partID
             Long parentId = getPartByMasterId(bomLinkViewDTOList.get(0).getTarget().getId()).getId();
-            return getRootId(parentId);
+            return getRootId(parentId);//递归获取根节点id
         }
         else {//不存在父项，直接返回id
             return id;
